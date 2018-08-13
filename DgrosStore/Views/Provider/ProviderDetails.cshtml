@@ -1,0 +1,45 @@
+﻿@model DgrosStore.Models.Provider
+@{
+    ViewBag.Title = "ProviderDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Name</h2>
+
+<div class="row">
+    <div class="col-sm-12 col-lg-12 card card-body">
+        <div class="row">
+            <div class="col-lg-4">
+                <h2>Informacion</h2>
+                <h5>Correo electronico</h5>
+                <span>@Model.Email</span><br />
+                <h5>Telefono</h5>
+                <span>@Model.Telephone</span>
+                <h5>Direccion</h5>
+                <span>@(String.IsNullOrWhiteSpace(Model.Direcction) ? "no hay direccion" : Model.Direcction)</span><br />
+            </div>
+            <div class="col-lg-7">
+                <h5>Compras</h5>
+                @if (Model.Shoppings == null || Model.Shoppings.Count() == 0)
+                {
+                    <span>No se han Comprado articulos a este Proveedor</span>
+                }
+                else
+                {
+                    int counter = 1;
+                    foreach (var shopping in Model.Shoppings)
+                    {
+                        <span>@counter - @shopping.Date</span>
+                        counter++;
+                    }
+
+                }
+            </div>
+            <div class="col-lg-1  d-flex justify-content-lg-start p-0 " style="height:38px">
+                @Html.ActionLink(" ", "Index", "Provider", null, new { @class = "btn btn-info fa fa-times" })
+            </div>
+        </div>
+        
+    </div>
+    
+</div>

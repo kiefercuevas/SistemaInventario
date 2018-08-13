@@ -1,0 +1,33 @@
+﻿@model DgrosStore.Models.Product
+@{
+    ViewBag.Title = "Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class=" row">
+        <div class="col-sm-12 card  col-lg-4 p-4">
+            <img height="300" width="300" src="@(Model.Image == null ? @"\Content\Images\prueba.png" : Model.Image)" class="rounded float-left" alt="...">
+        </div>
+        <div class="col-sm-12 col-lg-8 card card-body ">
+            <h3><strong class="ml-2">@Model.Name</strong></h3>
+            <p class="ml-2">Categoria: @Html.ActionLink(@Model.Category.Name, "ProductByCategory", "Product", new { category = Model.Category.Name }, new { @style = "color:'dodgerblue'" })</p>
+            <p>
+                <span class="ml-2">precio de compra / precio de Venta</span>
+                <h3 class="ml-2">$@Model.ShoppingPrice / $@Model.SellingPrice</h3>
+                <span class="ml-2">Cantidad: <strong>@Model.Stock</strong></span>
+            </p>
+            <p class="ml-2">
+                @Model.Description
+            </p>
+            <div class="ml-2">
+                @Html.ActionLink(" ", "Edit", "Product", new { id = Model.ProductId }, new { @class = "btn btn-warning btn-xs fa fa-edit" })
+                <button type="button" class="btn btn-danger btn-xs"><span class="fa fa-remove"></span></button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="col-lg-4 d-flex justify-content-lg-start p-0">
+    @Html.ActionLink(" ", "Index", "Product", null, new { @class = "btn btn-info btn-block  my-2 fa fa-long-arrow-left" })
+</div>

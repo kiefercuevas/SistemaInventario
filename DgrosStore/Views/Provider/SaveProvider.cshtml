@@ -1,0 +1,40 @@
+﻿@model DgrosStore.Models.Provider
+@{
+    ViewBag.Title = "SaveProvider";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="row">
+    <h2 class="col-lg-4">@(Model.ProviderId == 0 ? "Crear" : Model.Name)</h2>
+    <div class="col-lg-2 d-flex justify-content-lg-end">
+        @Html.ActionLink(" ", "Index", "Provider", null, new { @class = "btn btn-info my-2 fa fa-times" })
+    </div>
+</div>
+
+
+@using (Html.BeginForm("Save", "Provider", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="name">Nombre</label>
+                @Html.TextBoxFor(p => p.Name, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="email">Correo</label>
+                @Html.TextBoxFor(p => p.Email, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="Telephone">Telefono</label>
+                @Html.TextBoxFor(p => p.Telephone, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="">Direccion</label>
+                @Html.TextAreaFor(p => p.Direcction, new { @class = "form-control" })
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+        @Html.HiddenFor(p => p.ProviderId)
+    </div>
+}

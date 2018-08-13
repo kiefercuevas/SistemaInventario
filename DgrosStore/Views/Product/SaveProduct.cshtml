@@ -1,0 +1,71 @@
+﻿@model DgrosStore.Models.viewModels.ProductViewModel
+@{
+    ViewBag.Title = "SaveProduct";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <h2 class="col-lg-6">Producto</h2>
+    <div class="col-lg-4 d-flex justify-content-lg-end">
+        @Html.ActionLink(" ", "Index", "Product", null, new { @class = "btn btn-info my-2 fa fa-times" })
+    </div>
+</div>
+
+@using (Html.BeginForm("Save", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="Name"><strong>Nombre</strong></label>
+                @Html.TextBoxFor(p => p.Product.Name, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="ShoppingPrice"><strong>Precio de compra</strong></label>
+                @Html.TextBoxFor(p => p.Product.ShoppingPrice, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="SellingPrice"><strong>Precio de Venta</strong></label>
+                @Html.TextBoxFor(p => p.Product.SellingPrice, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="Stock"><strong>Inventario</strong></label>
+                @Html.TextBoxFor(p => p.Product.Stock, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="Category"><strong>Categoria</strong></label>
+                @Html.DropDownListFor(c => c.Product.CategoryId, new SelectList(Model.Categories, "CategoryId", "Name"), "Elige una categoria", new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="Store"><strong>Tienda</strong></label>
+                @Html.DropDownListFor(c => c.Product.StoreId, new SelectList(Model.Stores, "StoreId", "Name"), "Elige una tienda", new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-lg-4">
+
+            <div class="form-group">
+                <label for="MinimunStock"><strong>Cantidad minima de productos</strong></label>
+                @Html.TextBoxFor(p => p.Product.MinimunStock, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="Description"><strong>Descripcion</strong></label>
+                @Html.TextAreaFor(p => p.Product.Description, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label for="Image"><strong>Imagen</strong></label>
+                <div class="input-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="UploadedFile" name="UploadedFile">
+                        <label style="overflow:hidden" class="custom-file-label" for="UploadedFile">@(Model.Product.Image == null ? "prueba.png" : Model.Product.Image.Split('/')[Model.Product.Image.Split('/').Length - 1])</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-lg-4 my-4">
+                <img height="250" width="250" src="@(Model.Product.Image == null ? @"\Content\Images\prueba.png" : Model.Product.Image)" class="rounded float-left" alt="...">
+            </div>
+            @Html.HiddenFor(p => p.Product.ProductId)
+        </div>
+        <div class="col-lg-12">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+
+        </div>
+    </div>
+}

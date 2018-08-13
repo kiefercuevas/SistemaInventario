@@ -1,0 +1,70 @@
+﻿@model DgrosStore.Models.Client
+@{
+    ViewBag.Title = "ClientDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="card col-sm-12 col-lg-4 p-4">
+        <img height="300" width="300" class="card-img-top rounded my-2 border-right-0" src="@(Model.Image == null ? @"\Content\Images\client.png" : Model.Image)" alt="Card image">
+        <div class="card-body border-right-0">
+            <h5 class="card-title">@Model.Name @Model.LastName</h5>
+            <div class="card-text">
+                <h6>@(Model.Telephones.FirstOrDefault() == null ? "..." : Model.Telephones.FirstOrDefault().Number)</h6>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-sm-12 col-lg-8 card card-body border-left-0">
+        <h2>Informacion Adicional</h2>
+        <br />
+        <h5>Correo electronico</h5>
+        <span>@Model.Email</span><br />
+        <h5>Direccion</h5>
+        <span>@(String.IsNullOrWhiteSpace(Model.Direcction) ? "no hay direccion" : Model.Direcction)</span><br />
+        
+        <div class="row">
+            <div class="col-lg-4">
+                <h5>Telefonos @Html.ActionLink(" ", "Create", "Telephone", new { id = Model.ClientId },new { @class = "btn btn-success btn-sm fa fa-plus 2x my-1" })</h5>
+                @if (Model.Telephones == null || Model.Telephones.Count() == 0)
+                {
+                    <span>No hay telefonos</span>
+                }
+                else
+                {
+                    int counter = 1;
+                    foreach (var telephone in Model.Telephones)
+                    {
+
+                        <span><strong>@counter</strong> - @telephone.Number @Html.ActionLink(" ","Edit","Telephone",new { id = telephone.TelephoneId },new {@class = "btn btn-warning btn-sm fa fa-edit 2x my-1" })
+                            @Html.ActionLink(" ","Delete","Telephone",new { id = telephone.TelephoneId },new {@class = "btn btn-danger btn-sm fa fa-times 2x my-1" })</span><br />
+                        counter++;
+                    }
+
+                }
+                <br />
+            </div>
+            <div class="col-lg-8">
+                <h5>Ventas</h5>
+                @if (Model.Sales == null || Model.Sales.Count() == 0)
+                {
+                    <span>No se han vendido articulos a este cliente</span>
+                }
+                else
+                {
+                    int counter = 1;
+                    foreach (var sales in Model.Sales)
+                    {
+                        <span>@counter - @sales.Date</span>
+                        counter++;
+                    }
+
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-lg-4  d-flex justify-content-lg-start p-0">
+        @Html.ActionLink(" ", "Index", "Client", null, new { @class = "btn btn-info btn-block my-2 fa fa-long-arrow-left" })
+    </div>
+</div>

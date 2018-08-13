@@ -1,0 +1,27 @@
+﻿@model DgrosStore.Models.Category
+@{
+    ViewBag.Title = "SaveCategory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <h2>Categoria</h2>
+
+    <div class="col-lg-4 d-flex justify-content-lg-end">
+        @Html.ActionLink(" ", "Index", "Category",null, new { @class = "btn btn-info my-2 fa fa-times" })
+    </div>
+</div>
+
+
+@using (Html.BeginForm("Save", "Category"))
+{
+    <div class="form-group">
+        <label>Nombre</label>
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+    </div>
+    @Html.HiddenFor(m => m.CategoryId);
+    <div>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+}
+

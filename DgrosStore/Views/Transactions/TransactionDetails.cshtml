@@ -1,0 +1,39 @@
+﻿@model DgrosStore.Models.Transaction
+@{
+    ViewBag.Title = "TransactionDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Type - @Model.ReleaseDate.ToShortDateString()</h2>
+<div class="">
+    @*@Html.ActionLink("Atras", "Index", "Transactions", null, new { @class = "btn-primary btn-sm glyphicon glyphicon-chevron-left" })*@
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Precio</th>
+                    <th scope="col">Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model.Products)
+                {
+                    <tr>
+                        <th scope="row">@product.Id</th>
+                        <td>@product.Name</td>
+                        <td>@product.Price</td>
+                        <td>@product.Quantity</td>
+                    </tr>
+                }
+                <tr>
+                    <th scope="row"><strong>Total:</strong></th>
+                    <td></td>
+                    <td></td>
+                    <td>$@Model.Total</td>
+                </tr>
+            </tbody>
+        </table>
+
+
