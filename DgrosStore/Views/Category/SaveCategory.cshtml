@@ -18,6 +18,7 @@
     <div class="form-group">
         <label>Nombre</label>
         @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Name)
     </div>
     @Html.HiddenFor(m => m.CategoryId);
     <div>

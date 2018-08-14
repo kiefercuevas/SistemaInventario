@@ -34,10 +34,24 @@ namespace DgrosStore.Controllers
         public ActionResult Save(Category category)
         {
             if(category.CategoryId == 0)
+            {
+                if (!ModelState.IsValid)
+                {
+                    var emptyCategory = new Category();
+                    return View("SaveCategory", emptyCategory);
+                }
                 dgrosStore.Categories.Add(category);
+            }
+                
             else
             {
                 var categoryInDB = dgrosStore.Categories.SingleOrDefault(c => c.CategoryId == category.CategoryId);
+                if (!ModelState.IsValid)
+                {
+                    var editCategory = categoryInDB;
+                    return View("SaveCategory", editCategory);
+                }
+
                 categoryInDB.Name = category.Name;
             }
             
