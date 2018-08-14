@@ -20,11 +20,12 @@
     </div>
     @Html.HiddenFor(t => t.ClientId)
     @Html.HiddenFor(t => t.TelephoneId)
+    @Html.AntiForgeryToken()
     <button class="btn btn-primary">Guardar</button>
 }
 
 
 @section scripts
     {
-    @Scripts.Render("~/bundles/jqueryval");
+    @Scripts.Render("~/bundles/jqueryval")
 }

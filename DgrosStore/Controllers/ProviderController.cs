@@ -47,6 +47,8 @@ namespace DgrosStore.Controllers
                 return View("SaveProvider", provider);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Provider provider)
         {
             if(provider.ProviderId == 0)

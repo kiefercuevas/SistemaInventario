@@ -36,6 +36,8 @@ namespace DgrosStore.Controllers
                 return View("SaveTelephone",telephone);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Telephone telephone)
         {
             if(telephone.TelephoneId == 0)

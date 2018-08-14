@@ -65,6 +65,7 @@ namespace DgrosStore.Controllers
 
         [HttpPost]
         [Route("Save/Product")]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(ProductViewModel productView)
         {
             string url = "/Content/Images/Products/";

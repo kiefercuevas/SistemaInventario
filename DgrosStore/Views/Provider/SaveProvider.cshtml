@@ -36,6 +36,7 @@
                 <label for="">Direccion</label>
                 @Html.TextAreaFor(p => p.Direcction, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.Direcction)
+                @Html.AntiForgeryToken()
             </div>
             <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
@@ -45,5 +46,5 @@
 
 @section scripts
     {
-        @Scripts.Render("~/bundles/jqueryval");
+        @Scripts.Render("~/bundles/jqueryval")
     }

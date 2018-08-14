@@ -52,6 +52,7 @@ namespace DgrosStore.Controllers
 
         [HttpPost]
         [Route("Save/Client")]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(ClientViewModel clientView)
         {
             string url = "/Content/Images/Clients/";

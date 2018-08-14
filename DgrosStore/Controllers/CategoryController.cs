@@ -31,6 +31,7 @@ namespace DgrosStore.Controllers
         //add category
         [HttpPost]
         [Route("Save/Category")]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Category category)
         {
             if(category.CategoryId == 0)
