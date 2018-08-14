@@ -7,7 +7,7 @@
 <div class="row">
     <h2>@(Model.TelephoneId == 0 ? "Telefono" : "Editar Telefono")</h2>
     <div class="col-lg-4 d-flex justify-content-lg-end">
-            @Html.ActionLink(" ", "ClientDetails", "Client", new { id = Model.ClientId }, new { @class = "btn btn-info my-2 fa fa-times" })
+        @Html.ActionLink(" ", "ClientDetails", "Client", new { id = Model.ClientId }, new { @class = "btn btn-info my-2 fa fa-times" })
     </div>
 </div>
 
@@ -21,4 +21,10 @@
     @Html.HiddenFor(t => t.ClientId)
     @Html.HiddenFor(t => t.TelephoneId)
     <button class="btn btn-primary">Guardar</button>
+}
+
+
+@section scripts
+    {
+    @Scripts.Render("~/bundles/jqueryval");
 }

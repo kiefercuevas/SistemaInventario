@@ -5,60 +5,66 @@
 }
 <div class="row">
     <h2 class="col-lg-6">@(Model.Client.Name.IsEmpty() ? "Clientes" : Model.Client.Name)</h2>
-        <div class="col-lg-4 d-flex justify-content-lg-end">
-            @Html.ActionLink(" ", "Index", "Client", null, new { @class = "btn btn-info my-2 fa fa-times" })
+    <div class="col-lg-4 d-flex justify-content-lg-end">
+        @Html.ActionLink(" ", "Index", "Client", null, new { @class = "btn btn-info my-2 fa fa-times" })
+    </div>
+</div>
+
+
+@using (Html.BeginForm("Save", "Client", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="">Nombre</label>
+                @Html.TextBoxFor(c => c.Client.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Client.Name)
+            </div>
+            <div class="form-group">
+                <label for="">Apellido</label>
+                @Html.TextBoxFor(c => c.Client.LastName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Client.LastName)
+            </div>
+            <div class="form-group">
+                <label for="">Email</label>
+                @Html.TextBoxFor(c => c.Client.Email, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Client.Email)
+            </div>
+            <div class="form-group">
+                <label for="">Direccion</label>
+                @Html.TextAreaFor(c => c.Client.Direcction, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Client.Direcction)
+            </div>
+            @if (Model.Client.ClientId == 0)
+            {
+                <div class="form-group">
+                    <label for="">Telefono</label>
+                    @Html.TextBoxFor(c => c.Telephone, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Telephone)
+                </div>
+            }
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+        <div class="col-lg-4">
+            <div class="form-group">
+                <label for="Image"><strong>Imagen</strong></label>
+                <div class="input-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="UploadedFile" name="UploadedFile">
+                        <label style="overflow:hidden" class="custom-file-label" for="UploadedFile">@(Model.Client.Image == null ? "client.png" : Model.Client.Image.Split('/')[Model.Client.Image.Split('/').Length - 1])</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-lg-4 my-4">
+                <img height="250" width="250" src="@(Model.Client.Image == null ? @"\Content\Images\client.png" : Model.Client.Image)" class="rounded float-left" alt="...">
+            </div>
+            @Html.HiddenFor(c => c.Client.ClientId)
         </div>
     </div>
+}
 
 
-    @using (Html.BeginForm("Save", "Client", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@section scripts
     {
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="form-group">
-                    <label for="">Nombre</label>
-                    @Html.TextBoxFor(c => c.Client.Name, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Client.Name)
-                </div>
-                <div class="form-group">
-                    <label for="">Apellido</label>
-                    @Html.TextBoxFor(c => c.Client.LastName, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Client.LastName)
-                </div>
-                <div class="form-group">
-                    <label for="">Email</label>
-                    @Html.TextBoxFor(c => c.Client.Email, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Client.Email)
-                </div>
-                <div class="form-group">
-                    <label for="">Direccion</label>
-                    @Html.TextAreaFor(c => c.Client.Direcction, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.Client.Direcction)
-                </div>
-                @if (Model.Client.ClientId == 0)
-                {
-                    <div class="form-group">
-                        <label for="">Telefono</label>
-                        @Html.TextBoxFor(c => c.Telephone, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Telephone)
-                    </div>
-                }
-                <button type="submit" class="btn btn-primary">Guardar</button>
-            </div>
-            <div class="col-lg-4">
-                <div class="form-group">
-                    <label for="Image"><strong>Imagen</strong></label>
-                    <div class="input-group">
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="UploadedFile" name="UploadedFile">
-                            <label style="overflow:hidden" class="custom-file-label" for="UploadedFile">@(Model.Client.Image == null ? "client.png" : Model.Client.Image.Split('/')[Model.Client.Image.Split('/').Length - 1])</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-lg-4 my-4">
-                    <img height="250" width="250" src="@(Model.Client.Image == null ? @"\Content\Images\client.png" : Model.Client.Image)" class="rounded float-left" alt="...">
-                </div>
-                @Html.HiddenFor(c => c.Client.ClientId)
-            </div>
-        </div>
-    }
+    @Scripts.Render("~/bundles/jqueryval");
+}
