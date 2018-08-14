@@ -17,26 +17,32 @@
             <div class="form-group">
                 <label for="Name"><strong>Nombre</strong></label>
                 @Html.TextBoxFor(p => p.Product.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Product.Name)
             </div>
             <div class="form-group">
                 <label for="ShoppingPrice"><strong>Precio de compra</strong></label>
                 @Html.TextBoxFor(p => p.Product.ShoppingPrice, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Product.ShoppingPrice)
             </div>
             <div class="form-group">
                 <label for="SellingPrice"><strong>Precio de Venta</strong></label>
                 @Html.TextBoxFor(p => p.Product.SellingPrice, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Product.SellingPrice)
             </div>
             <div class="form-group">
                 <label for="Stock"><strong>Inventario</strong></label>
                 @Html.TextBoxFor(p => p.Product.Stock, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Product.Stock)
             </div>
             <div class="form-group">
                 <label for="Category"><strong>Categoria</strong></label>
                 @Html.DropDownListFor(c => c.Product.CategoryId, new SelectList(Model.Categories, "CategoryId", "Name"), "Elige una categoria", new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Product.CategoryId)
             </div>
             <div class="form-group">
                 <label for="Store"><strong>Tienda</strong></label>
                 @Html.DropDownListFor(c => c.Product.StoreId, new SelectList(Model.Stores, "StoreId", "Name"), "Elige una tienda", new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Product.StoreId)
             </div>
         </div>
         <div class="col-lg-4">
@@ -44,10 +50,12 @@
             <div class="form-group">
                 <label for="MinimunStock"><strong>Cantidad minima de productos</strong></label>
                 @Html.TextBoxFor(p => p.Product.MinimunStock, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Product.MinimunStock)
             </div>
             <div class="form-group">
                 <label for="Description"><strong>Descripcion</strong></label>
                 @Html.TextAreaFor(p => p.Product.Description, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Product.Description)
             </div>
             <div class="form-group">
                 <label for="Image"><strong>Imagen</strong></label>

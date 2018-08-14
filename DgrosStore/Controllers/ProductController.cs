@@ -20,7 +20,7 @@ namespace DgrosStore.Controllers
 
         public ActionResult Index()
         {
-            var Products = dgrosStore.Products.Where(p => p.State).ToList();
+            var Products = dgrosStore.Products.Where(p => p.State == true).ToList();
             return View("ProductIndex",Products);
         }
 
@@ -67,12 +67,24 @@ namespace DgrosStore.Controllers
         [Route("Save/Product")]
         public ActionResult Save(ProductViewModel productView)
         {
-            
             string url = "/Content/Images/Products/";
             productView.Product.State = true;
 
             if (productView.Product.ProductId == 0)
             {
+                //validaciones
+                if (!ModelState.IsValid)
+                {
+                    var emptyproduct = new ProductViewModel()
+                    {
+                        Categories = dgrosStore.Categories.ToList(),
+                        Stores = dgrosStore.Stores.ToList(),
+                        Product = new Product()
+                    };
+                    return View("SaveProduct", emptyproduct);
+                }
+
+
                 try
                 {
                     if (productView.UploadedFile != null)
@@ -94,6 +106,23 @@ namespace DgrosStore.Controllers
             }
             else
             {
+                //validacion
+                if (!ModelState.IsValid)
+                {
+                    var categories = dgrosStore.Categories.ToList();
+                    var stores = dgrosStore.Stores.ToList();
+
+                    var productInDb = dgrosStore.Products.SingleOrDefault(p => p.ProductId == productView.Product.ProductId);
+                    var editproduct = new ProductViewModel()
+                    {
+                        Categories = categories,
+                        Stores = stores,
+                        Product = productInDb
+                    };
+                    return View("SaveProduct", editproduct);
+                }
+
+
                 var productInDB = dgrosStore.Products.SingleOrDefault(p => p.ProductId == productView.Product.ProductId);
 
                 productInDB.Name = productView.Product.Name;
