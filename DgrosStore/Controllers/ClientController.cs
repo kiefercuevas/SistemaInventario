@@ -58,6 +58,14 @@ namespace DgrosStore.Controllers
 
             if (clientView.Client.ClientId == 0)
             {
+                if (!ModelState.IsValid)
+                {
+                    var emptyClient = new ClientViewModel()
+                    {
+                        Client = new Client()
+                    };
+                    return View("SaveClient", emptyClient);
+                }
                 try
                 {
                     if (clientView.UploadedFile != null)
@@ -88,6 +96,16 @@ namespace DgrosStore.Controllers
             else
             {
                 var clientInDb = dgrosStore.Clients.SingleOrDefault(c=> c.ClientId == clientView.Client.ClientId);
+
+                if (!ModelState.IsValid)
+                {
+                    var editClient = new ClientViewModel()
+                    {
+                        Client = clientInDb,
+                        Telephone = clientView.Telephone
+                    };
+                    return View("SaveClient", editClient);
+                }
 
                 clientInDb.Name = clientView.Client.Name;
                 clientInDb.LastName = clientView.Client.LastName;
@@ -130,17 +148,10 @@ namespace DgrosStore.Controllers
                 return HttpNotFound();
             else
             {
-                var telephones = dgrosStore.Telephones.Where(t => t.ClientId == id).ToList();
                 var client = new ClientViewModel()
                 {
                     Client = ClientInDb
                 };
-
-                foreach(var telephone in telephones)
-                {
-                    client.Telephone += telephone.Number + "\n"; 
-                }
-                
                 return View("SaveClient", client);
             }
 

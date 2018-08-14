@@ -18,24 +18,29 @@
                 <div class="form-group">
                     <label for="">Nombre</label>
                     @Html.TextBoxFor(c => c.Client.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Client.Name)
                 </div>
                 <div class="form-group">
                     <label for="">Apellido</label>
                     @Html.TextBoxFor(c => c.Client.LastName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Client.LastName)
                 </div>
                 <div class="form-group">
                     <label for="">Email</label>
                     @Html.TextBoxFor(c => c.Client.Email, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Client.Email)
                 </div>
                 <div class="form-group">
                     <label for="">Direccion</label>
                     @Html.TextAreaFor(c => c.Client.Direcction, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Client.Direcction)
                 </div>
                 @if (Model.Client.ClientId == 0)
                 {
                     <div class="form-group">
                         <label for="">Telefono</label>
                         @Html.TextBoxFor(c => c.Telephone, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Telephone)
                     </div>
                 }
                 <button type="submit" class="btn btn-primary">Guardar</button>
