@@ -51,11 +51,23 @@ namespace DgrosStore.Controllers
         {
             if(provider.ProviderId == 0)
             {
+                if (!ModelState.IsValid)
+                {
+                    var emptyProdider = new Provider();
+                    return View("SaveProvider", emptyProdider);
+                }
                 dgrosStore.Providers.Add(provider);
             }
             else
             {
                 var providerInDb = dgrosStore.Providers.SingleOrDefault(p => p.ProviderId == provider.ProviderId);
+
+                if (!ModelState.IsValid)
+                {
+                    var editProdider = providerInDb;
+                    return View("SaveProvider", editProdider);
+                }
+
                 providerInDb.Name = provider.Name;
                 providerInDb.Telephone = provider.Telephone;
                 providerInDb.Email = provider.Email;
