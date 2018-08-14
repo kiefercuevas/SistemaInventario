@@ -213,6 +213,8 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\customValidation\SellingPriceValidation.cs" />
+    <Compile Include="Models\customValidation\ShoppingPriceValidation.cs" />
     <Compile Include="Models\DgrosStoreContext.cs" />
     <Compile Include="Models\EntitiesConfiguration\CategoryConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\ClientConfiguration.cs" />
