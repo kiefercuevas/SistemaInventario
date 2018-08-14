@@ -202,6 +202,10 @@
     <Compile Include="Migrations\201808140437199_chanceLenthToNameColunmInProductTable.Designer.cs">
       <DependentUpon>201808140437199_chanceLenthToNameColunmInProductTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808140659192_chanceNumberColunmToRequiredFromTelephoneTable.cs" />
+    <Compile Include="Migrations\201808140659192_chanceNumberColunmToRequiredFromTelephoneTable.Designer.cs">
+      <DependentUpon>201808140659192_chanceNumberColunmToRequiredFromTelephoneTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Client.cs" />
@@ -371,6 +375,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808140437199_chanceLenthToNameColunmInProductTable.resx">
       <DependentUpon>201808140437199_chanceLenthToNameColunmInProductTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808140659192_chanceNumberColunmToRequiredFromTelephoneTable.resx">
+      <DependentUpon>201808140659192_chanceNumberColunmToRequiredFromTelephoneTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -40,13 +40,28 @@ namespace DgrosStore.Controllers
         {
             if(telephone.TelephoneId == 0)
             {
+                if (!ModelState.IsValid)
+                {
+                    var emptyTelephone = new Telephone()
+                    {
+                        ClientId = telephone.ClientId
+                    };
+                    return View("SaveTelephone", emptyTelephone);
+                }
                 if (!String.IsNullOrWhiteSpace(telephone.Number))
                     dgrosStore.Telephones.Add(telephone);   
             }   
             else
             {
                 var telephoneInDb = dgrosStore.Telephones.SingleOrDefault(t => t.TelephoneId == telephone.TelephoneId);
-                if(telephoneInDb != null)
+
+                if (!ModelState.IsValid)
+                {
+                    var editTelephone = telephoneInDb;
+                    return View("SaveTelephone", editTelephone);
+                }
+
+                if (telephoneInDb != null)
                 {
                     if (!String.IsNullOrWhiteSpace(telephone.Number))
                         telephoneInDb.Number = telephone.Number;

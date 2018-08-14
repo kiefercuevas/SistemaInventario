@@ -16,6 +16,7 @@
     <div class="form-group">
         <label for="telephone">Telefono</label>
         @Html.TextBoxFor(t => t.Number, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Number)
     </div>
     @Html.HiddenFor(t => t.ClientId)
     @Html.HiddenFor(t => t.TelephoneId)
