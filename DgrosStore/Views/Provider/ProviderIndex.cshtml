@@ -5,48 +5,48 @@
 }
 
 <div class="row">
-        <h2 class="col-lg-6">Proveedores</h2>
-        <div class="col-lg-6 d-flex justify-content-lg-end">
-            @Html.ActionLink(" ", "Create", "Provider", null, new { @class = "btn btn-success btn-xs m-2 fa fa-plus" })
-        </div>
+    <h2 class="col-lg-6">Proveedores</h2>
+    <div class="col-lg-6 d-flex justify-content-lg-end">
+        @Html.ActionLink(" ", "Create", "Provider", null, new { @class = "btn btn-success btn-xs m-2 fa fa-plus" })
     </div>
-    @if (Model.Count() > 0)
-    {
-        var cont = 1;
-        <table class="table table-hover table-responsive-md">
-            <thead>
+</div>
+@if (Model.Count() > 0)
+{
+    var cont = 1;
+    <table class="table table-hover table-responsive-md table-bordered ">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Correo</th>
+                <th scope="col">Telefono</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var provider in Model)
+            {
+
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Correo</th>
-                    <th scope="col">Telefono</th>
-                    <th scope="col">Acciones</th>
+                    <th scope="row">@cont</th>
+                    <td>@Html.ActionLink(provider.Name, "ProviderDetails", "Provider", new { id = provider.ProviderId }, new { @style = "color:black" })</td>
+                    <td>@provider.Email</td>
+                    <td>@provider.Telephone</td>
+                    <td>
+                        @Html.ActionLink(" ", "Edit", "Provider", new { id = provider.ProviderId }, new { @class = "btn btn-warning btn-xs m-2 fa fa-edit" })
+                        <button type="button" class="btn btn-danger btn-xs"><span class="fa fa-remove"></span></button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-
-                @foreach (var provider in Model)
-                {
-
-                    <tr>
-                        <th scope="row">@cont</th>
-                        <td>@Html.ActionLink(provider.Name, "ProviderDetails", "Provider", new { id = provider.ProviderId }, new { @style = "color:black" })</td>
-                        <td>@provider.Email</td>
-                        <td>@provider.Telephone</td>
-                        <td>
-                            @Html.ActionLink(" ", "Edit", "Provider", new { id = provider.ProviderId }, new { @class = "btn btn-warning btn-xs m-2 fa fa-edit" })
-                            <button type="button" class="btn btn-danger btn-xs"><span class="fa fa-remove"></span></button>
-                        </td>
-                    </tr>
-                    { cont++; }
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <div class="jumbotron">
-            <h1 class="text-center">No hay Proveedores disponibles</h1>
-        </div>
-    }
+                { cont++; }
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="jumbotron">
+        <h1 class="text-center">No hay Proveedores disponibles</h1>
+    </div>
+}
 
