@@ -161,8 +161,8 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
+    <Compile Include="Controllers\SalesController.cs" />
     <Compile Include="Controllers\TelephoneController.cs" />
-    <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -239,6 +239,7 @@
     <Compile Include="Models\viewModels\ClientViewModel.cs" />
     <Compile Include="Models\viewModels\Image.cs" />
     <Compile Include="Models\viewModels\ProductViewModel.cs" />
+    <Compile Include="Models\viewModels\SalesViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -344,6 +345,7 @@
     <Content Include="Views\Provider\ProviderIndex.cshtml" />
     <Content Include="Views\Provider\SaveProvider.cshtml" />
     <Content Include="Views\Provider\ProviderDetails.cshtml" />
+    <Content Include="Views\Sales\SalesIndex.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

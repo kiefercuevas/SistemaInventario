@@ -29,3 +29,25 @@ textarea {
 .input-validation-error{
     border: 2px solid red;
 }
+
+.productSalesTable {
+    min-height: 524px;
+}
+
+#txt,#txt2{
+    width:70px;
+    margin: 0 auto;
+}
+
+.totalPrice{
+    font-size: 1.7em;
+}
+
+.btnSize{
+    width:280px;
+}
+
+.trSize{
+    height:30px;
+}
+
