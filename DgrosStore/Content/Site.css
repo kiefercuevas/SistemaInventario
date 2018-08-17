@@ -51,3 +51,31 @@ textarea {
     height:30px;
 }
 
+.clientSelect{
+    z-index: 1;
+}
+
+
+/*botones de busqueda para clientes y productos*/
+.inputDiv {
+    width: 280px;
+}
+
+.inputDiv input[type=text] {
+        width: 0px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        background-color: white;
+        /*padding: 12px 20px 12px 12px;*/
+        padding: 0;
+        -webkit-transition: all 0.4s ease-in-out;
+        transition: all 0.4s ease-in-out;
+        height: 38px;
+        border-left: 0;
+}
+
+.show {
+    width: 240px !important;
+    padding: 12px 20px 12px 10px !important;
+    z-index: 2;
+}

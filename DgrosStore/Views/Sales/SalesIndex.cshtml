@@ -22,7 +22,7 @@
             <tbody>
                 <tr>
                     <td><strong>producto1</strong></td>
-                    <td>@Html.TextBox("txt",null,new { @type="number",@class="form-control" })</td>
+                    <td>@Html.TextBox("txt", null, new { @type = "number", @class = "form-control" })</td>
                     <td>@Html.TextBox("txt2", null, new { @type = "number", @class = "form-control" })</td>
                     <td>
                         <button class="btn btn-success btn-sm"><span class="fa fa-plus"></span></button>
@@ -41,28 +41,35 @@
     <div class="col col-lg-5 col-sm-12 col-md-4">
         @using (Html.BeginForm("SaveSale", "Sales", FormMethod.Post, null))
         {
-            <div class="form-group">
-                <label for="Client"><strong>Cliente</strong></label>
-                @Html.TextBox(" ", null, new { @list = "Client", @name = "Client", @class = "form-control" })
-                <datalist id="Client">
-                    @foreach (var client in Model.Clients)
-                    {
-                        <option value="@client.Name"></option>
-                    }
-                </datalist>
+            <label for="Client"><strong>Cliente</strong></label>
+            <div class="form-group row px-3">
+                <div id="clientDiv" class="input-group inputDiv">
+                    <div class="input-group-prepend">
+                        <button type="button" id="searchClient" class="input-group-text"><i id="searchClientIcon"class="fa fa-search"></i></button>
+                    </div>
+                    <input type="text" id="clientInput">
+                    <select id="clientSelect" class="form-control">
+                        <option>seleccione un cliente</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="Product"><strong>Producto</strong></label>
-                @Html.TextBox(" ", null, new { @list = "Product", @name = "Product", @class = "form-control" })
-                <datalist id="Product">
-                    @foreach (var product in Model.Products)
-                    {
-                        <option value="@product.Name"></option>
-                    }
-                </datalist>
+
+            <label for="Product"><strong>Producto</strong></label>
+            <div class="form-group row px-3">
+                <div id="productDiv" class="input-group inputDiv">
+                    <div class="input-group-prepend">
+                        <button type="button" id="searchProduct" class="input-group-text"><i id="searchProductIcon" class="fa fa-search"></i></button>
+                    </div>
+                    <input type="text" id="productInput">
+                    <select id="productSelect" class="form-control">
+                        <option>seleccione un producto</option>
+                    </select>
+                </div>
             </div>
+
+
             <div class="form-group">
-                <button id="addProduct" class="btn btn-success btn-block btnSize">Agregar</button>
+                <button type="button" id="addProduct" class="btn btn-success btn-block btnSize">Agregar</button>
             </div>
             <div class="form-group">
                 <label><strong>Metodo de pago</strong></label>
@@ -70,11 +77,12 @@
             </div>
             <div class="form-group">
                 <label><strong>Comentario</strong></label>
-                @Html.TextAreaFor(m => m.Sales.Commentary,4,50,new { @class="form-control"})
+                @Html.TextAreaFor(m => m.Sales.Commentary, 4, 50, new { @class = "form-control" })
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary btnSize">Finalizar venta</button>
             </div>
+
         }
 
 
@@ -82,3 +90,87 @@
 
 </div>
 
+
+@section scripts {
+
+    <script>
+
+        $(document).ready(function () {
+
+            //para efectos en cliente
+            $("#searchClient").click(function () {
+
+                $("#searchClientIcon").toggleClass("fa fa-remove");
+                $("#searchClientIcon").toggleClass("fa fa-search");
+                $("#clientInput").toggleClass("show");
+                $("#clientInput").val("");
+            });
+
+            //clientes
+
+            $("#clientInput").keyup(function () {
+                var client = $("#clientInput").val();
+                var selectClient = $("#clientSelect");
+                $.ajax({
+                    type: "GET",
+                    url: "Sales/GetClients",
+                    data: { client: client },
+                    success: function (data) {
+
+                         data = JSON.parse(data);
+                        if (data.length == 0) {
+                            selectClient.html("<option value>no hay clientes con ese nombre</option>");
+                        } else {
+                            selectClient.html("");
+                            $(data).each(function (index, item) {
+                                selectClient.append(`<option value="${item.id}">${item.name +" " + item.lastName}</option>`)
+                            });
+                        }
+                        
+                    }
+                });
+
+            });
+
+            //productos
+            //para efectos en producto
+            $("#searchProduct").click(function () {
+
+                $("#searchProductIcon").toggleClass("fa fa-remove");
+                $("#searchProductIcon").toggleClass("fa fa-search");
+                $("#productInput").toggleClass("show");
+                $("#productInput").val("");
+            });
+
+            //productos
+            $("#productInput").keyup(function () {
+                var product = $("#productInput").val();
+                var selectProduct = $("#productSelect");
+                $.ajax({
+                    type: "GET",
+                    url: "Sales/GetProducts",
+                    data: { product: product},
+                    success: function (data) {
+
+                        data = JSON.parse(data);
+                        if (data.length == 0) {
+                            selectProduct.html("<option value>no hay productos con ese nombre</option>");
+                        } else {
+                            selectProduct.html("");
+                            $(data).each(function (index, item) {
+                                selectProduct.append(`<option value="${item.id}">${item.name}</option>`)
+                            });
+                        }
+
+                    }
+                });
+
+            });
+
+
+        });
+        
+
+    </script>
+
+}
