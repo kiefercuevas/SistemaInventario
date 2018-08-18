@@ -31,13 +31,9 @@ textarea {
 }
 
 .productSalesTable {
-    min-height: 524px;
+    max-height: 524px ;
 }
 
-#txt,#txt2{
-    width:70px;
-    margin: 0 auto;
-}
 
 .totalPrice{
     font-size: 1.7em;
@@ -78,4 +74,26 @@ textarea {
     width: 240px !important;
     padding: 12px 20px 12px 10px !important;
     z-index: 2;
+}
+
+
+/*table productos*/
+
+.totalDiv {
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    padding: 12px 20px 12px 10px;
+}
+
+#salesProductTableDiv {
+    max-height: 524px;
+    overflow-y:scroll;
+}
+
+#salesTableFormDiv {
+}
+
+.formWith{
+    width: 70px;
 }

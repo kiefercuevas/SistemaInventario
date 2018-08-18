@@ -20,8 +20,6 @@ namespace DgrosStore.Controllers
         {
             var Sales = new SalesViewModel()
             {
-                Clients = dgrosStore.Clients.ToList(),
-                Products = dgrosStore.Products.ToList(),
                 Sales = new Sales(),
                 salesProducs = new SalesProducs()
                 
@@ -69,5 +67,37 @@ namespace DgrosStore.Controllers
 
             return Json(JsonProduct, JsonRequestBehavior.AllowGet);
         }
+
+        [Route("Sales/GetProduct")]
+        public ActionResult GetProduct(int id)
+        {
+            var jsonSerialiser = new JavaScriptSerializer();
+
+            var product = dgrosStore.Products
+                        .Select(p => new
+                          {
+                              id = p.ProductId,
+                              name = p.Name,
+                              stock = p.Stock,
+                              price = p.SellingPrice
+                          })
+                        .SingleOrDefault(p => p.id == id);
+ 
+
+            if (product == null)
+            {
+                return HttpNotFound();
+            }
+
+            var jsonProduct = jsonSerialiser.Serialize(product);
+
+            return Json(jsonProduct,JsonRequestBehavior.AllowGet);
+        }
+
+
+
+
+
+
     }
 }

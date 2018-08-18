@@ -8,44 +8,33 @@
 
 <div class="row">
 
-    <div class="col col-lg-7 col-sm-12 col-md-8">
+    <div id="salesProductTableDiv" class="col col-lg-8 col-sm-12 col-md-8">
 
-        <table class="table table-bordered productSalesTable text-lg-center">
+        <table id="salesProductTable" class="table table-bordered productSalesTable text-lg-center">
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">Nombre</th>
                     <th scope="col">Cant</th>
                     <th scope="col">Desc</th>
+                    <th scope="col">Precio</th>
+                    <th scope="col">SubTotal</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td><strong>producto1</strong></td>
-                    <td>@Html.TextBox("txt", null, new { @type = "number", @class = "form-control" })</td>
-                    <td>@Html.TextBox("txt2", null, new { @type = "number", @class = "form-control" })</td>
-                    <td>
-                        <button class="btn btn-success btn-sm"><span class="fa fa-plus"></span></button>
-                        <button class="btn btn-warning btn-sm"><span class="fa fa-minus"></span></button>
-                        <button class="btn btn-danger btn-sm"><span class="fa fa-remove"></span></button>
-                    </td>
-                </tr>
-                <tr class="trSize text-left">
-                    <td colspan="4"><strong class="totalPrice">Total: $<span id="total">0</span></strong></td>
-                </tr>
+            <tbody id="tableProduct">
+
             </tbody>
         </table>
-
     </div>
 
-    <div class="col col-lg-5 col-sm-12 col-md-4">
+    <div id="salesTableFormDiv" class=" col col-lg-4 col-sm-12 col-md-4">
         @using (Html.BeginForm("SaveSale", "Sales", FormMethod.Post, null))
         {
             <label for="Client"><strong>Cliente</strong></label>
             <div class="form-group row px-3">
                 <div id="clientDiv" class="input-group inputDiv">
                     <div class="input-group-prepend">
-                        <button type="button" id="searchClient" class="input-group-text"><i id="searchClientIcon"class="fa fa-search"></i></button>
+                        <button type="button" id="searchClient" class="input-group-text"><i id="searchClientIcon" class="fa fa-search"></i></button>
                     </div>
                     <input type="text" id="clientInput">
                     <select id="clientSelect" class="form-control">
@@ -87,6 +76,9 @@
 
 
     </div>
+    <div class="totalDiv col col-lg-8 col-sm-12 col-md-8 my-3 ">
+        <strong class="totalPrice">Total: $<span id="total">0</span></strong>
+    </div>
 
 </div>
 
@@ -94,6 +86,11 @@
 @section scripts {
 
     <script>
+
+        var Products = [];
+        var price = 0;
+        var Productquantity;
+        var ProductPrice;
 
         $(document).ready(function () {
 
@@ -166,6 +163,89 @@
                 });
 
             });
+
+
+
+
+
+            //añadir productos
+            $("#addProduct").click(function () {
+                var selectProduct = $("#productSelect").val();
+                var tableProduct = $("#tableProduct");
+                var productRepeated = 0;
+                var total = $("#total");
+
+
+                if (selectProduct > 0) {
+                    $.ajax({
+                        type: "GET",
+                        url: "Sales/GetProduct",
+                        data: { id: selectProduct },
+                        success: function (data) {
+
+                            data = JSON.parse(data);
+                            if (data.length == 0) {
+                                tableProduct.html(`<td colspan="4"><h2><strong>no hay productos</strong></h2></td>`);
+                            }else {
+
+                                $(Products).each(function (index, item) {
+                                    if ($(item).val() == data.id) {
+                                        alert("El producto ya esta en la lista de productos");
+                                        productRepeated = 1;
+                                    }
+                                });
+
+                                if (productRepeated == 0) {
+                                    tableProduct.append(`<tr>
+                                    <td style="display:none"><input type="hidden" value="${data.id}" readonly></td>
+                                    <td><strong>${data.name}</strong></td>
+                                    <td><input type="number" name="quantity" min="1" max="${data.stock}" value="1"></td>
+                                    <td><input type="number" name="discount" min="0" max="100" value="0"></td>
+                                    <td><strong>${data.price}</strong></td>
+                                    <td><strong name="subTotal">${data.price}</strong></td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm"><span class="fa fa-remove"></span></button>
+                                </td>
+                                    </tr>`);
+                                    price += data.price;
+                                    total.html(price);
+
+                                    Products = Array.from(tableProduct.children("tr").children("td").children("input[type='hidden']"));
+                                    Productquantity = tableProduct.children("tr").children("td").children("input[name='quantity']");
+                                    ProductPrice = Array.from(tableProduct.children("tr").children("td").children("strong[name='subTotal']"));
+
+                                    $(Productquantity).last().on("keyup click", data, function () {
+                                        price = 0;
+                                        var SelectedProductprice = $(this).parent().next().next().next().children("strong[name='subTotal']");
+                                        var totalProductPrice = data.price * $(this).val();
+                                        $(SelectedProductprice).html(totalProductPrice);
+                                        
+                                        $(ProductPrice).each(function (i, priceItem)
+                                        {
+                                            price += parseInt($(priceItem).html());
+                                        });
+                                        total.html(price);
+                                    });
+
+
+                                }
+                                
+                            }
+                        }
+                    });
+                } else {
+                    alert("debe introducir un producto");
+                }
+                
+            });
+
+            //evaluar cantidad
+
+
+
+
+
+
 
 
         });
