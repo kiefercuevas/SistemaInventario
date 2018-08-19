@@ -88,9 +88,6 @@
     <script>
 
         var Products = [];
-        var price = 0;
-        var Productquantity;
-        var ProductPrice;
 
         $(document).ready(function () {
 
@@ -170,78 +167,133 @@
 
             //añadir productos
             $("#addProduct").click(function () {
-                var selectProduct = $("#productSelect").val();
-                var tableProduct = $("#tableProduct");
-                var productRepeated = 0;
-                var total = $("#total");
+                var selectedProduct = $("#productSelect").val();
 
-
-                if (selectProduct > 0) {
+                if (selectedProduct > 0) {
                     $.ajax({
                         type: "GET",
                         url: "Sales/GetProduct",
-                        data: { id: selectProduct },
+                        data: { id: selectedProduct },
                         success: function (data) {
 
                             data = JSON.parse(data);
-                            if (data.length == 0) {
-                                tableProduct.html(`<td colspan="4"><h2><strong>no hay productos</strong></h2></td>`);
+
+                            if (!RepeatedProduct(data)) {
+
+                                //append table element
+                                CreateTableElement(data)
+
+                                //price
+                                UpdatePrice();
+
+                                //productos
+                                CreateProductArray();
+
+                                //quantity
+                                QuantityAsingEvent(data);
+
                             }else {
-
-                                $(Products).each(function (index, item) {
-                                    if ($(item).val() == data.id) {
-                                        alert("El producto ya esta en la lista de productos");
-                                        productRepeated = 1;
-                                    }
-                                });
-
-                                if (productRepeated == 0) {
-                                    tableProduct.append(`<tr>
-                                    <td style="display:none"><input type="hidden" value="${data.id}" readonly></td>
-                                    <td><strong>${data.name}</strong></td>
-                                    <td><input type="number" name="quantity" min="1" max="${data.stock}" value="1"></td>
-                                    <td><input type="number" name="discount" min="0" max="100" value="0"></td>
-                                    <td><strong>${data.price}</strong></td>
-                                    <td><strong name="subTotal">${data.price}</strong></td>
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-sm"><span class="fa fa-remove"></span></button>
-                                </td>
-                                    </tr>`);
-                                    price += data.price;
-                                    total.html(price);
-
-                                    Products = Array.from(tableProduct.children("tr").children("td").children("input[type='hidden']"));
-                                    Productquantity = tableProduct.children("tr").children("td").children("input[name='quantity']");
-                                    ProductPrice = Array.from(tableProduct.children("tr").children("td").children("strong[name='subTotal']"));
-
-                                    $(Productquantity).last().on("keyup click", data, function () {
-                                        price = 0;
-                                        var SelectedProductprice = $(this).parent().next().next().next().children("strong[name='subTotal']");
-                                        var totalProductPrice = data.price * $(this).val();
-                                        $(SelectedProductprice).html(totalProductPrice);
-                                        
-                                        $(ProductPrice).each(function (i, priceItem)
-                                        {
-                                            price += parseInt($(priceItem).html());
-                                        });
-                                        total.html(price);
-                                    });
-
-
-                                }
-                                
+                                alert("el producto ya esta en la lista de productos");
                             }
+                            
                         }
                     });
                 } else {
-                    alert("debe introducir un producto");
+                    alert("debe elegir un producto");
                 }
-                
             });
 
-            //evaluar cantidad
+
+            //crear elemento de tr de la tabla
+            function CreateTableElement(data) {
+
+                $("#tableProduct").append(
+                    `<tr>
+                        <td style="display:none"><input type="hidden" value="${data.id}" readonly></td>
+                        <td><strong>${data.name}</strong></td>
+                        <td><input type="number" name="quantity" min="1" max="${data.stock}" value="1"></td>
+                        <td><input type="number" name="discount" min="0" max="100" value="0"></td>
+                        <td><strong>${data.price}</strong></td>
+                        <td><strong name="subTotal">${data.price}</strong></td>
+                        <td><button type="button" class="btn btn-danger btn-sm"><span class="fa fa-remove"></span></button></td>
+                     </tr>`
+                );
+            }
+
+            //crear Arreglo de id de Productos
+            function CreateProductArray() {
+                var products = Array.from($("#tableProduct")
+                    .children("tr")
+                    .children("td")
+                    .children("input[type='hidden']"));
+
+                return products;
+            }
+
+            //ver si se repite el producto
+            function RepeatedProduct(data) {
+
+                var products = CreateProductArray();
+                var productRepeated = false;
+
+                $(products).each(function (index, item) {
+                    if ($(item).val() == data.id) {
+                        productRepeated = true;
+                    }
+                });
+                return productRepeated;
+            }
 
 
+            //actualizar precio
+            function UpdatePrice() {
+
+                var total = $("#total");
+                var price = 0;
+
+                var ProductPrice = Array
+                    .from($("#tableProduct")
+                        .children("tr")
+                        .children("td")
+                        .children("strong[name='subTotal']"));
+
+                $(ProductPrice).each(function (i, priceItem) {
+                    price += parseInt($(priceItem).html());
+                });
+
+
+                total.html(price);
+
+            }
+
+
+            //asignar eventos al input cantidades
+            function QuantityAsingEvent(data) {
+
+                var Productquantity = $("#tableProduct").children("tr").children("td").children("input[name='quantity']");
+
+                $(Productquantity).last().on("keyup click", data, function () {
+
+                    var SelectedProductprice =
+                        $(this)
+                            .parent()
+                            .next()
+                            .next()
+                            .next()
+                            .children("strong[name='subTotal']");
+
+                    var totalProductPrice = data.price * $(this).val();
+
+                    $(SelectedProductprice).html(totalProductPrice);
+
+                    //price
+                    UpdatePrice();
+                });
+
+
+
+
+            }
 
 
 
