@@ -16,7 +16,7 @@
 
                 data = JSON.parse(data);
                 if (data.length == 0) {
-                    selectClient.html("<option value>no hay clientes con ese nombre</option>");
+                    selectClient.html("<option value='0'>no hay clientes con ese nombre</option>");
                 } else {
                     selectClient.html("");
                     $(data).each(function (index, item) {
@@ -129,8 +129,8 @@
         );
     }
 
-    //crear Arreglo de id de Productos
-    function CreateProductArray() {
+    //crear Arreglo de ids Productos
+    function CreateProductIdArray() {
         var products = Array.from($("#tableProduct")
             .children("tr")
             .children("td")
@@ -142,7 +142,7 @@
     //ver si se repite el producto
     function RepeatedProduct(data) {
 
-        var products = CreateProductArray();
+        var products = CreateProductIdArray();
         var productRepeated = false;
 
         $(products).each(function (index, item) {
@@ -167,7 +167,7 @@
                 .children("strong[name='subTotal']"));
 
         $(ProductPrice).each(function (i, priceItem) {
-            price += parseInt($(priceItem).html());
+            price += Math.round(parseFloat($(priceItem).html()));
         });
 
 
@@ -214,6 +214,7 @@
         var discount = parseFloat(data.price * percent);
 
         var totalProductPriceWithDiscount = (data.price * quantityInput) - (discount * quantityInput);
+        totalProductPriceWithDiscount = Math.round(totalProductPriceWithDiscount);
         $(subTotal).html(totalProductPriceWithDiscount);
     }
 
@@ -232,5 +233,101 @@
             }
         });
     }
+
+
+
+    //finalizar venta
+    $("#salesButton").click(function () {
+
+        var paymentMethod = parseInt($("#paymentMethod").val());
+        var client = parseInt($("#clientSelect").val());
+        var commentary = $("#commentary").val();
+        var total = $("#total").html();
+        var products = CreateProductArray(); 
+        var notClient = 0;
+
+
+        if (products.length == 0) {
+            alert("Debe agregar algun producto para realizar una venta");
+        } else {
+            if (paymentMethod == 0) {
+                alert("Debe seleccionar un metodo de pago");
+            } else {
+                
+                if (client.length == 0 || client == 0) {
+                    var sales = CreateSalesObject(notClient, products, paymentMethod, commentary, total);
+                    SendSalesObject(sales);
+                } else {
+                    var sales = CreateSalesObject(client, products, paymentMethod, commentary, total);
+                    SendSalesObject(sales); 
+                }
+            }
+        }
+    });
+
+    //crear arreglo de productos
+    function CreateProductArray() {
+
+        var products = $("#tableProduct").children("tr");
+
+        var listOfProducts = [];
+
+        $(products).each(function (i, item) {
+            var product = Array.from($(item).children());
+            var model = {
+                id: parseInt($(product).children("input[type='hidden']").val()),
+                quantity: parseInt($(product).children("input[name='quantity']").val()),
+                discount: parseInt($(product).children("input[name='discount']").val()),
+            }
+            listOfProducts.push(model);
+        });
+
+        return listOfProducts;
+    }
+
+
+
+    //crear objeto venta
+    function CreateSalesObject(clientId, products, paymentMethod, commentary,total) {
+        var Sales = {
+            clientId: clientId,
+            products: products,
+            paymentMethod: paymentMethod,
+            commentary: commentary,
+            total: total
+        }
+        return Sales;
+    }
+
+    //enviar objeto via ajax
+    function SendSalesObject(sales) {
+
+        if (confirm("desea realizar esta venta")) {
+            $.ajax({
+                type: "POST",
+                url: "Sales/Save",
+                dataType: "json",
+                data: { model: JSON.stringify(sales) },
+                success: function (data) {
+
+                    if (String(data) == "true") {
+                        alert("La venta se ha realizado correctamente");
+                        window.location.reload();
+                    } else {
+                        alert("error: " +data);
+                    }
+                        
+                },
+                error: function (response) {
+                    alert("error: "+response.responseText);
+                }
+            });
+        } else {
+            alert("la venta no se ha realizado");
+        }
+        
+    }
+
+
 
 });

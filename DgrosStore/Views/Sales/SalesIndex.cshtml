@@ -28,8 +28,7 @@
     </div>
 
     <div id="salesTableFormDiv" class=" col col-lg-4 col-sm-12 col-md-4">
-        @using (Html.BeginForm("SaveSale", "Sales", FormMethod.Post, null))
-        {
+        <form method="post">
             <label for="Client"><strong>Cliente</strong></label>
             <div class="form-group row px-3">
                 <div id="clientDiv" class="input-group inputDiv">
@@ -38,7 +37,7 @@
                     </div>
                     <input type="text" id="clientInput">
                     <select id="clientSelect" class="form-control">
-                        <option>seleccione un cliente</option>
+                        <option value="0">seleccione un cliente</option>
                     </select>
                 </div>
             </div>
@@ -62,18 +61,16 @@
             </div>
             <div class="form-group">
                 <label><strong>Metodo de pago</strong></label>
-                @Html.EnumDropDownListFor(m => m.Sales.paymentMethod, "selecciona un metodo de pago", new { @class = "form-control" })
+                @Html.EnumDropDownListFor(m => m.paymentMethod, "selecciona un metodo de pago", new { @class = "form-control" })
             </div>
             <div class="form-group">
                 <label><strong>Comentario</strong></label>
-                @Html.TextAreaFor(m => m.Sales.Commentary, 4, 50, new { @class = "form-control" })
+                @Html.TextAreaFor(m => m.commentary, 4, 50, new { @class = "form-control" })
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary btnSize">Finalizar venta</button>
+                <button id="salesButton" type="button" class="btn btn-primary btnSize">Finalizar venta</button>
             </div>
-
-        }
-
+        </form>
 
     </div>
     <div class="totalDiv col col-lg-8 col-sm-12 col-md-8 my-3 ">

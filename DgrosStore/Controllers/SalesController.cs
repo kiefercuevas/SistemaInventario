@@ -20,9 +20,7 @@ namespace DgrosStore.Controllers
         {
             var Sales = new SalesViewModel()
             {
-                Sales = new Sales(),
-                salesProducs = new SalesProducs()
-                
+                paymentMethod = new PaymentMethod()
             };
             return View("SalesIndex",Sales);
         }
@@ -94,10 +92,60 @@ namespace DgrosStore.Controllers
             return Json(jsonProduct,JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        [Route("Sales/Save")]
+        public ActionResult Save(string model)
+        {
+            var jsonSerialiser = new JavaScriptSerializer();
+            var salesViewModel = jsonSerialiser.Deserialize<SalesViewModel>(model);
+            var client = dgrosStore.Clients.SingleOrDefault(c => c.ClientId == salesViewModel.ClientId);
 
+            var sales = CreateSales(salesViewModel, client);
 
+            try
+            {
+                dgrosStore.Sales.Add(sales);
+                dgrosStore.SaveChanges();
+                return Content("true");
+            }
+            catch(Exception ex)
+            {
+                return Content(ex.Message);
+            }
+        }
 
+       
+        private Sales CreateSales(SalesViewModel salesViewModel,Client client)
+        {
+            Sales sales;
 
+            sales = new Sales()
+            {
+                Clients = new List<Client>(),
+                StoreId = 1,
+                Commentary = salesViewModel.commentary,
+                Date = DateTime.Now,
+                paymentMethod = salesViewModel.paymentMethod,
+                State = true,
+                SalesProducs = new List<SalesProducs>(),
+            };
+            
+            foreach (var product in salesViewModel.Products)
+            {
+                var salesProduct = new SalesProducs()
+                {
+                    Product = dgrosStore.Products.SingleOrDefault(p => p.ProductId == product.id),
+                    Discount = product.discount,
+                    Quantity = product.quantity,
+                    Sales = sales
+                };
+                sales.SalesProducs.Add(salesProduct);
+            };
+
+            sales.Clients.Add(client);
+
+            return sales;
+        }
 
     }
 }

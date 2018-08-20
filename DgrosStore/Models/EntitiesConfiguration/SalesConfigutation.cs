@@ -15,10 +15,14 @@ namespace DgrosStore.Models.EntitiesConfiguration
             ToTable("Sales");
             HasKey(s => s.Id);
 
-            HasRequired(c => c.Client)
+            HasMany(c => c.Clients)
                 .WithMany(s => s.Sales)
-                .HasForeignKey(c => c.ClientId)
-                .WillCascadeOnDelete(false);
+                .Map(m =>
+                {
+                    m.ToTable("clientSales");
+                    m.MapLeftKey("salesId");
+                    m.MapRightKey("clientId");
+                });
 
             HasRequired(st => st.Store)
                 .WithMany(s => s.Sales)
