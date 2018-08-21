@@ -15,12 +15,12 @@
             success: function (data) {
 
                 data = JSON.parse(data);
-                if (data.length == 0) {
-                    selectClient.html("<option value='0'>no hay clientes con ese nombre</option>");
+                if (data.length === 0 && client.length > 0) {
+                    selectClient.html("<option value>No existen clientes con ese nombre</option>");
                 } else {
                     selectClient.html("");
                     $(data).each(function (index, item) {
-                        selectClient.append(`<option value="${item.id}">${item.name + " " + item.lastName}</option>`);
+                        selectClient.append(`<option value="${item.ClientId}">${item.Name + " " + item.LastName}</option>`);
                     });
                 }
 
@@ -38,12 +38,12 @@
             success: function (data) {
 
                 data = JSON.parse(data);
-                if (data.length == 0) {
-                    selectProduct.html("<option value>no hay productos con ese nombre</option>");
+                if (data.length === 0 && product.length > 0) {
+                    selectProduct.html("<option value>No existen productos con ese nombre</option>");
                 } else {
                     selectProduct.html("");
                     $(data).each(function (index, item) {
-                        selectProduct.append(`<option value="${item.id}">${item.name}</option>`);
+                        selectProduct.append(`<option value="${item.ProductId}">${item.Name}</option>`);
                     });
                 }
 
@@ -71,7 +71,7 @@
                     if (!RepeatedProduct(data)) {
 
                         //append table element
-                        CreateTableElement(data)
+                        CreateTableElement(data);
 
                         //price
                         UpdatePrice();
@@ -87,12 +87,12 @@
                         CreateDeleteButtonArray(data);
 
                     } else {
-                        alert("el producto ya esta en la lista de productos");
+                        alert("El producto ya esta en la lista de productos");
                     }
                 }
             });
         } else {
-            alert("debe elegir un producto");
+            alert("Debe elegir un producto");
         }
     });
 
@@ -146,7 +146,7 @@
         var productRepeated = false;
 
         $(products).each(function (index, item) {
-            if ($(item).val() == data.id) {
+            if (parseInt($(item).val()) === data.id) {
                 productRepeated = true;
             }
         });
@@ -209,14 +209,24 @@
         var subTotal = $(element).parent().parent().children("td").children("strong[name='subTotal']");
         var discountInput = $(element).parent().parent().children("td").children("input[name='discount']").val();
         var quantityInput = $(element).parent().parent().children("td").children("input[name='quantity']").val();
-        var percent = parseFloat(parseInt(discountInput) / 100);
+        var percent;
+        var discount;
 
-        var discount = parseFloat(data.price * percent);
+        if (discountInput.length == 0) {
+            alert("El campo de descuento no puede estar vacio");
+        } else if (quantityInput.length == 0) {
+            alert("El campo de cantidad no puede estar vacio");
+        } else {
+            percent = parseFloat(parseInt(discountInput) / 100);
+            discount = parseFloat(data.price * percent);
 
-        var totalProductPriceWithDiscount = (data.price * quantityInput) - (discount * quantityInput);
-        totalProductPriceWithDiscount = Math.round(totalProductPriceWithDiscount);
-        $(subTotal).html(totalProductPriceWithDiscount);
+            var totalProductPriceWithDiscount = (data.price * quantityInput) - (discount * quantityInput);
+            totalProductPriceWithDiscount = Math.round(totalProductPriceWithDiscount);
+            $(subTotal).html(totalProductPriceWithDiscount);
+        }
+
     }
+
 
     //borrar productos
     function CreateDeleteButtonArray(data) {
@@ -240,26 +250,33 @@
     $("#salesButton").click(function () {
 
         var paymentMethod = parseInt($("#paymentMethod").val());
-        var client = parseInt($("#clientSelect").val());
+        var client = $("#clientSelect").val();
         var commentary = $("#commentary").val();
         var total = $("#total").html();
         var products = CreateProductArray(); 
         var notClient = 0;
+        var sales;
+        console.log();
+        if (typeof (products) != "undefined") {
 
-
-        if (products.length == 0) {
-            alert("Debe agregar algun producto para realizar una venta");
-        } else {
-            if (paymentMethod == 0) {
-                alert("Debe seleccionar un metodo de pago");
+            if (products.length === 0) {
+                alert("Debe agregar algun producto para realizar una venta");
             } else {
-                
-                if (client.length == 0 || client == 0) {
-                    var sales = CreateSalesObject(notClient, products, paymentMethod, commentary, total);
-                    SendSalesObject(sales);
+                if (paymentMethod === 0) {
+                    alert("Debe seleccionar un metodo de pago");
                 } else {
-                    var sales = CreateSalesObject(client, products, paymentMethod, commentary, total);
-                    SendSalesObject(sales); 
+
+                    if (client.length == 0) {
+                        sales = CreateSalesObject(notClient, products, paymentMethod, commentary, total);
+                        if (sales.length != 0) {
+                            SendSalesObject(sales);
+                        }
+                    } else {
+                        sales = CreateSalesObject(client, products, paymentMethod, commentary, total);
+                        if (sales.length != 0) {
+                            SendSalesObject(sales);
+                        }
+                    }
                 }
             }
         }
@@ -269,7 +286,8 @@
     function CreateProductArray() {
 
         var products = $("#tableProduct").children("tr");
-
+        var quantityError = 0;
+        var discountError = 0;
         var listOfProducts = [];
 
         $(products).each(function (i, item) {
@@ -279,10 +297,23 @@
                 quantity: parseInt($(product).children("input[name='quantity']").val()),
                 discount: parseInt($(product).children("input[name='discount']").val()),
             }
-            listOfProducts.push(model);
-        });
 
-        return listOfProducts;
+            if (isNaN(model.quantity)){
+                quantityError += 1;
+            }
+            if (isNaN(model.discount)){
+                discountError += 1;
+            }
+             listOfProducts.push(model);
+        });
+        if (quantityError > 0) {
+            alert("El campo cantidad de algun producto esta vacio, por favor llene el campo");
+        } else if (discountError > 0) {
+            alert("El campo descuento de algun producto esta vacio, por favor llene el campo");
+        } else {
+            return listOfProducts;
+        }
+        
     }
 
 
@@ -290,11 +321,11 @@
     //crear objeto venta
     function CreateSalesObject(clientId, products, paymentMethod, commentary,total) {
         var Sales = {
-            clientId: clientId,
-            products: products,
+            ClientId: clientId,
+            Products: products,
             paymentMethod: paymentMethod,
             commentary: commentary,
-            total: total
+            Total: total
         }
         return Sales;
     }
@@ -302,7 +333,7 @@
     //enviar objeto via ajax
     function SendSalesObject(sales) {
 
-        if (confirm("desea realizar esta venta")) {
+        if (confirm("Desea realizar esta venta")) {
             $.ajax({
                 type: "POST",
                 url: "Sales/Save",
@@ -310,7 +341,7 @@
                 data: { model: JSON.stringify(sales) },
                 success: function (data) {
 
-                    if (String(data) == "true") {
+                    if (String(data) === "true") {
                         alert("La venta se ha realizado correctamente");
                         window.location.reload();
                     } else {
@@ -323,7 +354,7 @@
                 }
             });
         } else {
-            alert("la venta no se ha realizado");
+            alert("La venta no se ha realizado");
         }
         
     }

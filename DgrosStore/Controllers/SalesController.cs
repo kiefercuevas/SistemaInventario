@@ -20,7 +20,9 @@ namespace DgrosStore.Controllers
         {
             var Sales = new SalesViewModel()
             {
-                paymentMethod = new PaymentMethod()
+                paymentMethod = new PaymentMethod(),
+                products = dgrosStore.Products.ToList(),
+                clients = dgrosStore.Clients.ToList(),
             };
             return View("SalesIndex",Sales);
         }
@@ -30,20 +32,21 @@ namespace DgrosStore.Controllers
         {
 
             var jsonSerialiser = new JavaScriptSerializer();
-            var clientInDB = dgrosStore.Clients
+            List<Client> clientInDB;
+            if (!String.IsNullOrWhiteSpace(client))
+            {
+                clientInDB = dgrosStore.Clients
                 .Where(c => c.Name.IndexOf(client) > -1)
-                .Select(c => new
-                {
-                    id = c.ClientId,
-                    name = c.Name,
-                    lastName = c.LastName
-                }).ToList();
+                .ToList();
+            }
+            else
+            {
+                clientInDB = dgrosStore.Clients.ToList();
+            }
 
+            var jsonClient = jsonSerialiser.Serialize(clientInDB);
 
-            var JsonClients = jsonSerialiser
-                .Serialize(clientInDB);
-
-            return Json(JsonClients, JsonRequestBehavior.AllowGet);
+            return Json(jsonClient, JsonRequestBehavior.AllowGet);
         }
 
         [Route("Sales/GetProducts")]
@@ -51,17 +54,21 @@ namespace DgrosStore.Controllers
         {
 
             var jsonSerialiser = new JavaScriptSerializer();
-            var productInDB = dgrosStore.Products
-                .Where(p => p.Name.IndexOf(product) > -1)
-                .Select(p => new
-                {
-                    id = p.ProductId,
-                    name = p.Name,
-                }).ToList();
+            List<GetProductView> ProductInDB = new List<GetProductView>();
+            if (!String.IsNullOrWhiteSpace(product))
+            {
+                 var products = dgrosStore.Products
+                    .Where(c => c.Name.IndexOf(product) > -1)
+                    .ToList();
+                ProductInDB = GetProductViewList(products, ProductInDB);
+            }
+            else
+            {
+                var products = dgrosStore.Products.ToList();
+                ProductInDB = GetProductViewList(products, ProductInDB);
+            }
 
-
-            var JsonProduct = jsonSerialiser
-                .Serialize(productInDB);
+            var JsonProduct = jsonSerialiser.Serialize(ProductInDB);
 
             return Json(JsonProduct, JsonRequestBehavior.AllowGet);
         }
@@ -97,8 +104,13 @@ namespace DgrosStore.Controllers
         public ActionResult Save(string model)
         {
             var jsonSerialiser = new JavaScriptSerializer();
-            var salesViewModel = jsonSerialiser.Deserialize<SalesViewModel>(model);
+            var salesViewModel = jsonSerialiser.Deserialize<SaveSalesViewModel>(model);
             var client = dgrosStore.Clients.SingleOrDefault(c => c.ClientId == salesViewModel.ClientId);
+
+            if (!ModelState.IsValid)
+            {
+                return Content("false");
+            }
 
             var sales = CreateSales(salesViewModel, client);
 
@@ -115,7 +127,7 @@ namespace DgrosStore.Controllers
         }
 
        
-        private Sales CreateSales(SalesViewModel salesViewModel,Client client)
+        private Sales CreateSales(SaveSalesViewModel salesViewModel,Client client)
         {
             Sales sales;
 
@@ -141,11 +153,25 @@ namespace DgrosStore.Controllers
                 };
                 sales.SalesProducs.Add(salesProduct);
             };
-
-            sales.Clients.Add(client);
+            if(client != null)
+                sales.Clients.Add(client);
 
             return sales;
         }
 
+
+        private List<GetProductView> GetProductViewList(List<Product> products, List<GetProductView> getProductViews)
+        {
+            foreach (var item in products)
+            {
+                var getProduct = new GetProductView
+                {
+                    ProductId = item.ProductId,
+                    Name = item.Name
+                };
+                getProductViews.Add(getProduct);
+            }
+            return getProductViews;
+        }
     }
 }

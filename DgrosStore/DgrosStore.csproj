@@ -241,10 +241,12 @@
     <Compile Include="Models\Telephone.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\viewModels\ClientViewModel.cs" />
+    <Compile Include="Models\viewModels\GetProductView.cs" />
     <Compile Include="Models\viewModels\Image.cs" />
     <Compile Include="Models\viewModels\ProductJsonModel.cs" />
     <Compile Include="Models\viewModels\ProductViewModel.cs" />
     <Compile Include="Models\viewModels\SalesViewModel.cs" />
+    <Compile Include="Models\viewModels\SaveSalesViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

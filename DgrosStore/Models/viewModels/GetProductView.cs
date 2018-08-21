@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+
 namespace DgrosStore.Models.viewModels
 {
-    public class ProductJsonModel
+    public class GetProductView
     {
-        public int id;
-        public int quantity;
-        public int discount; 
+        public int ProductId;
+        public string Name;
+ 
     }
 }
