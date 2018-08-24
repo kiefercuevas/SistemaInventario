@@ -109,7 +109,7 @@
 
         $(icon).toggleClass("fa fa-remove");
         $(icon).toggleClass("fa fa-search");
-        $(input).toggleClass("show");
+        $(input).toggleClass("showIcon");
         $(input).val("");
     }
 

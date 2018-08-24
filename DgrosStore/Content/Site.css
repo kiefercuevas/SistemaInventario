@@ -70,10 +70,10 @@ textarea {
         border-left: 0;
 }
 
-.show {
+.showIcon {
     width: 240px !important;
     padding: 12px 20px 12px 10px !important;
-    z-index: 2;
+    
 }
 
 
