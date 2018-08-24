@@ -235,6 +235,7 @@
     <Compile Include="Models\EntitiesConfiguration\ShoppingProductConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\StoreConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\TelephoneConfiguration.cs" />
+    <Compile Include="Models\PaginationModel.cs" />
     <Compile Include="Models\PaymentMethod.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Provider.cs" />
@@ -248,6 +249,7 @@
     <Compile Include="Models\viewModels\ClientViewModel.cs" />
     <Compile Include="Models\viewModels\GetProductView.cs" />
     <Compile Include="Models\viewModels\Image.cs" />
+    <Compile Include="Models\viewModels\IndexProductViewModel.cs" />
     <Compile Include="Models\viewModels\ProductJsonModel.cs" />
     <Compile Include="Models\viewModels\ProductViewModel.cs" />
     <Compile Include="Models\viewModels\SalesViewModel.cs" />
@@ -359,6 +361,7 @@
     <Content Include="Views\Provider\SaveProvider.cshtml" />
     <Content Include="Views\Provider\ProviderDetails.cshtml" />
     <Content Include="Views\Sales\SalesIndex.cshtml" />
+    <Content Include="Views\Shared\_pagination.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

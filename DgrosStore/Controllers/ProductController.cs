@@ -18,10 +18,26 @@ namespace DgrosStore.Controllers
             dgrosStore = new DgrosStoreContext();
         }
 
-        public ActionResult Index()
+        public ActionResult Index(int page = 1)
         {
-            var Products = dgrosStore.Products.Where(p => p.State == true).ToList();
-            return View("ProductIndex",Products);
+            var PageRecordNumber = 10;
+
+            var Products = dgrosStore.Products
+                .OrderBy(p => p.ProductId)
+                .Skip((page - 1) * PageRecordNumber)
+                .Take(PageRecordNumber)
+                .Where(p => p.State == true).ToList();
+
+            var TotalRecords = dgrosStore.Products.Where(p => p.State == true).Count();
+            var indexProductViewModel = new IndexProductViewModel()
+            {
+                Products = Products,
+                ActualPage = page,
+                PageRecordNumber = PageRecordNumber,
+                TotalRecords = TotalRecords
+            };
+
+            return View("ProductIndex", indexProductViewModel);
         }
 
 

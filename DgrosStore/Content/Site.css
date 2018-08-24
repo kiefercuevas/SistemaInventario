@@ -97,3 +97,13 @@ textarea {
 .formWith{
     width: 70px;
 }
+
+/*paginacion*/
+
+.paginationAlign{
+    width: 100% ;
+}
+.paginationAlign > ul{
+    width: 30%;
+    margin: 0 auto;
+}
