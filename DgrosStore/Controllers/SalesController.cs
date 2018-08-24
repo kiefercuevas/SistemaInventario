@@ -38,6 +38,13 @@ namespace DgrosStore.Controllers
                 clientInDB = dgrosStore.Clients
                 .Where(c => c.Name.IndexOf(client) > -1)
                 .ToList();
+
+                if(clientInDB.Count() == 0)
+                {
+                    clientInDB = dgrosStore.Clients
+                    .Where(c => c.IdCard.IndexOf(client) > -1)
+                    .ToList();
+                }
             }
             else
             {
@@ -130,7 +137,6 @@ namespace DgrosStore.Controllers
         private Sales CreateSales(SaveSalesViewModel salesViewModel,Client client)
         {
             Sales sales;
-
             sales = new Sales()
             {
                 Clients = new List<Client>(),
