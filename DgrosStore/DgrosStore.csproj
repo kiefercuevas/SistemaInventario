@@ -214,9 +214,14 @@
     <Compile Include="Migrations\201808200334291_changeRelationIntoClientAndSalesFromOneToManyToManyToMany.Designer.cs">
       <DependentUpon>201808200334291_changeRelationIntoClientAndSalesFromOneToManyToManyToMany.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808240246156_createIdCardColunmIntoClientTable.cs" />
+    <Compile Include="Migrations\201808240246156_createIdCardColunmIntoClientTable.Designer.cs">
+      <DependentUpon>201808240246156_createIdCardColunmIntoClientTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\customValidation\IdCardValidation.cs" />
     <Compile Include="Models\customValidation\SellingPriceValidation.cs" />
     <Compile Include="Models\customValidation\ShoppingPriceValidation.cs" />
     <Compile Include="Models\DgrosStoreContext.cs" />
@@ -398,6 +403,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808200334291_changeRelationIntoClientAndSalesFromOneToManyToManyToMany.resx">
       <DependentUpon>201808200334291_changeRelationIntoClientAndSalesFromOneToManyToManyToMany.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808240246156_createIdCardColunmIntoClientTable.resx">
+      <DependentUpon>201808240246156_createIdCardColunmIntoClientTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

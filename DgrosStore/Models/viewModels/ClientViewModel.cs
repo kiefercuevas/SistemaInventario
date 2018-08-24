@@ -9,8 +9,7 @@ namespace DgrosStore.Models.viewModels
     public class ClientViewModel
     {
         public Client Client { get; set; }
-        [Required(ErrorMessage ="Debe introducir un telefono")]
-        [RegularExpression(@"^[+-]?\d+(\.\d+)?$",ErrorMessage ="el telefono no es un telefono valido")]
+        [RegularExpression(@"\b8[024]9\-?\d{3}\-?\d{4}\b", ErrorMessage ="El telefono no es un telefono valido")]
         public String Telephone { get; set; }
 
         public HttpPostedFileBase UploadedFile { get; set; }

@@ -18,7 +18,7 @@
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Nombre</th>
-                <th scope="col">Apellido</th>
+                <th scope="col">Cedula</th>
                 <th scope="col">Email</th>
                 <th scope="col">Telefono</th>
                 <th scope="col">Acciones</th>
@@ -32,7 +32,7 @@
                 <tr>
                     <th scope="row">@cont</th>
                     <td>@Html.ActionLink(client.Name, "ClientDetails", "Client", new { id = client.ClientId }, new { @style = "color:black" })</td>
-                    <td>@client.LastName</td>
+                    <td>@client.IdCard</td>
                     <td>@client.Email</td>
                     <td>@(client.Telephones.FirstOrDefault() == null ? "..." : client.Telephones.FirstOrDefault().Number)</td>
                     <td>

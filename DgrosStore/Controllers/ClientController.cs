@@ -103,15 +103,22 @@ namespace DgrosStore.Controllers
                     var editClient = new ClientViewModel()
                     {
                         Client = clientInDb,
-                        Telephone = clientView.Telephone
                     };
-                    return View("SaveClient", editClient);
+                    var errors = ModelState
+                        .Where(x => x.Value.Errors.Count > 0)
+                        .Select(x => new { x.Key, x.Value.Errors })
+                        .ToList();
+                    var error = errors.FirstOrDefault(e => e.Key.IndexOf("T") > -1);
+                    var errorlist = error.Errors.FirstOrDefault(e => true);
+                    //return View("SaveClient", editClient);
+                    return Content(errorlist.ErrorMessage);
                 }
 
                 clientInDb.Name = clientView.Client.Name;
                 clientInDb.LastName = clientView.Client.LastName;
                 clientInDb.Email = clientView.Client.Email;
                 clientInDb.Direcction = clientView.Client.Direcction;
+                clientInDb.IdCard = clientView.Client.IdCard;
 
                 if (clientView.UploadedFile != null)
                 {
@@ -151,7 +158,7 @@ namespace DgrosStore.Controllers
             {
                 var client = new ClientViewModel()
                 {
-                    Client = ClientInDb
+                    Client = ClientInDb   
                 };
                 return View("SaveClient", client);
             }

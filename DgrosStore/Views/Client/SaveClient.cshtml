@@ -26,6 +26,11 @@
                 @Html.ValidationMessageFor(m => m.Client.LastName)
             </div>
             <div class="form-group">
+                <label for="">Cedula</label>
+                @Html.TextBoxFor(c => c.Client.IdCard, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Client.IdCard)
+            </div>
+            <div class="form-group">
                 <label for="">Email</label>
                 @Html.TextBoxFor(c => c.Client.Email, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.Client.Email)

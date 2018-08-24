@@ -22,6 +22,7 @@ namespace DgrosStore.Models.EntitiesConfiguration
             Property(c => c.LastName)
                 .HasMaxLength(30)
                 .IsRequired();
+
         }
     }
 }

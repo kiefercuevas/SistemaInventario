@@ -10,6 +10,9 @@
         <div class="card-body border-right-0">
             <h5 class="card-title">@Model.Name @Model.LastName</h5>
             <div class="card-text">
+                <h6>@Model.IdCard</h6>
+            </div>
+            <div class="card-text">
                 <h6>@(Model.Telephones.FirstOrDefault() == null ? "..." : Model.Telephones.FirstOrDefault().Number)</h6>
             </div>
         </div>
