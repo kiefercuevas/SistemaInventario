@@ -7,6 +7,7 @@ using DgrosStore.Models;
 using System.Data.Entity;
 using DgrosStore.Models.viewModels;
 using System.IO;
+using System.Web.Script.Serialization;
 namespace DgrosStore.Controllers
 {
     public class ProductController : Controller
@@ -18,29 +19,16 @@ namespace DgrosStore.Controllers
             dgrosStore = new DgrosStoreContext();
         }
 
-        public ActionResult Index(int page = 1)
+        public ActionResult Index()
         {
-            var PageRecordNumber = 10;
-
             var Products = dgrosStore.Products
-                .OrderBy(p => p.ProductId)
-                .Skip((page - 1) * PageRecordNumber)
-                .Take(PageRecordNumber)
-                .Where(p => p.State == true).ToList();
+                .Where(p => p.State == true)
+                .ToList();
 
-            var TotalRecords = dgrosStore.Products.Where(p => p.State == true).Count();
-            var indexProductViewModel = new IndexProductViewModel()
-            {
-                Products = Products,
-                ActualPage = page,
-                PageRecordNumber = PageRecordNumber,
-                TotalRecords = TotalRecords
-            };
-
-            return View("ProductIndex", indexProductViewModel);
+            return View("ProductIndex", Products);
         }
 
-
+   
         [Route("Product/details/{id}")]
         public ActionResult ProductDetails(int id)
         {
@@ -212,8 +200,6 @@ namespace DgrosStore.Controllers
                 CompletePath = path
             };
         }
-
-
 
     }
 }
