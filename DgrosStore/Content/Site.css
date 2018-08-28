@@ -99,3 +99,17 @@ textarea {
 }
 
 /*paginacion*/
+.pagination > li > a, .pagination > li > span {
+    background-color: white;
+    color: black;
+}
+
+.pagination > li.active > a.page-link {
+    background-color: black;
+    border-color: black;
+}
+
+.dropdown-item:hover{
+    background-color:black;
+    color:white;
+}

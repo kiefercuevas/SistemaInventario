@@ -21,13 +21,17 @@ namespace DgrosStore.Controllers
 
         public ActionResult Index()
         {
+            return View("ProductIndex");
+        }
+        public ActionResult GetProducts()
+        {
             var Products = dgrosStore.Products
                 .Where(p => p.State == true)
                 .ToList();
 
-            return View("ProductIndex", Products);
+            var productModel = CreateProductModelList(Products);
+            return Json(productModel, JsonRequestBehavior.AllowGet);
         }
-
    
         [Route("Product/details/{id}")]
         public ActionResult ProductDetails(int id)
@@ -182,6 +186,22 @@ namespace DgrosStore.Controllers
             
         }
 
+        [HttpPost]
+        public ActionResult Delete(int id)
+        {
+            var product = dgrosStore.Products.SingleOrDefault(p => p.ProductId == id);
+            if (product == null)
+                return Json("0");
+            else
+            {
+                dgrosStore.Products.Remove(product);
+                dgrosStore.SaveChanges();
+                return Json("1");
+            }
+            
+        }
+
+
         protected override void Dispose(bool disposing)
         {
             dgrosStore.Dispose();
@@ -201,5 +221,23 @@ namespace DgrosStore.Controllers
             };
         }
 
+        private List<GetProductModel> CreateProductModelList(List<Product> products)
+        {
+            var productModelList = new List<GetProductModel>();
+            foreach(var product in products)
+            {
+                var productModel = new GetProductModel()
+                {
+                    ProductId = product.ProductId,
+                    Name = product.Name,
+                    SellingPrice = product.SellingPrice,
+                    ShoppingPrice = product.ShoppingPrice,
+                    Stock = product.Stock
+                };
+                productModelList.Add(productModel);
+            }
+
+            return productModelList;
+        }
     }
 }

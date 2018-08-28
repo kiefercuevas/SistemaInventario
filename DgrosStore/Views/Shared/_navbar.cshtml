@@ -16,6 +16,8 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         @Html.ActionLink("Productos", "Index", "Product", null, new { @class = "dropdown-item" })
+                        @Html.ActionLink("Crear Producto", "Create", "Product", null, new { @class = "dropdown-item" })
+                        <div class="dropdown-divider"></div>
                         @Html.ActionLink("Categorias", "Index", "Category", null, new { @class = "dropdown-item" })
                     </div>
                 </li>
