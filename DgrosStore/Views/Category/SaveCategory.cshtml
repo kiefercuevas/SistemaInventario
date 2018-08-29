@@ -1,11 +1,8 @@
 ﻿@model DgrosStore.Models.Category
-@{
-    ViewBag.Title = "";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+
 
 <div class="row">
-    <h2>Categoria</h2>
+    <h2 class="ml-2">Categoria</h2>
 
     <div class="col-lg-4 d-flex justify-content-lg-end">
         @Html.ActionLink(" ", "Index", "Category", null, new { @class = "btn btn-info my-2 fa fa-times" })

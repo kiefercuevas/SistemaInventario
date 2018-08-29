@@ -87,7 +87,7 @@
                     if (result) {
                         $.ajax({
                             type: "POST",
-                            url: `Product/Delete/${button.attr("data-id")}`,
+                            url: `/Product/Delete/${button.attr("data-id")}`,
                             success: function (data) {
                                 if (parseInt(data) == 1) {
                                     datatable.row(button.parents("tr"))
@@ -103,7 +103,7 @@
                             }
                         });
                     }
-                })
+                });
 
             });
         });

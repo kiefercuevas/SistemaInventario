@@ -1,8 +1,5 @@
 ﻿@model DgrosStore.Models.Product
-@{
-    ViewBag.Title = "";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+
 
 <div class="container">
     <div class=" row">
@@ -22,7 +19,7 @@
             </p>
             <div class="ml-2">
                 @Html.ActionLink(" ", "Edit", "Product", new { id = Model.ProductId }, new { @class = "btn btn-warning btn-xs fa fa-edit" })
-                <button type="button" class="btn btn-danger btn-xs"><span class="fa fa-remove"></span></button>
+                <button data-id="@Model.ProductId" type="button" class="btn btn-danger btn-xs js-remove"><span class="fa fa-remove"></span></button>
             </div>
         </div>
     </div>
@@ -31,3 +28,42 @@
 <div class="col-lg-4 d-flex justify-content-lg-start p-0">
     @Html.ActionLink(" ", "Index", "Product", null, new { @class = "btn btn-info btn-block  my-2 fa fa-long-arrow-left" })
 </div>
+
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+
+            var button = $(".js-remove");
+            button.on("click",function () {
+                var button = $(this);
+                bootbox.confirm("Estas seguro de que deseas eliminar este producto", function (result) {
+                    if (result) {
+                        $.ajax({
+                            type: "POST",
+                            url: `/Product/Delete/${button.attr("data-id")}`,
+                            success: function (data) {
+                                if (parseInt(data) == 1) {
+                                    bootbox.alert("Se ha borrado el producto", function ()
+                                    {
+                                        window.location.href = "/Product";
+                                    });
+                                    
+                                } else {
+                                    bootbox.alert("No Se ha borrado el producto, error interno:<br>"+data);
+                                }
+                            },
+                            error: function (response) {
+                                bootbox.alert(response.responseText);
+                            }
+                        });
+                    }
+                });
+
+            });
+        });
+    </script>
+    
+}

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using DgrosStore.Models;
+using DgrosStore.Models.viewModels;
+using System.Data.Entity;
 namespace DgrosStore.Controllers
 {
     public class CategoryController : Controller
@@ -17,10 +19,20 @@ namespace DgrosStore.Controllers
         // GET: Category
         public ActionResult Index()
         {
-            var categories = dgrosStore.Categories.ToList();
-            return View("CategoryIndex",categories);
+            return View("CategoryIndex");
         }
 
+        public ActionResult GetCategories()
+        {
+
+            var categories = dgrosStore.Categories
+                .Where(c => c.State == true)
+                .ToList();
+            var categoryModel = CreateCategoryModelList(categories);
+
+            return Json(categoryModel, JsonRequestBehavior.AllowGet);
+        }
+        
         [Route("Create/Category")]
         public ActionResult Create()
         {
@@ -34,6 +46,7 @@ namespace DgrosStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Save(Category category)
         {
+            var state = true;
             if(category.CategoryId == 0)
             {
                 if (!ModelState.IsValid)
@@ -41,6 +54,7 @@ namespace DgrosStore.Controllers
                     var emptyCategory = new Category();
                     return View("SaveCategory", emptyCategory);
                 }
+                category.State = state;
                 dgrosStore.Categories.Add(category);
             }
                 
@@ -70,8 +84,45 @@ namespace DgrosStore.Controllers
                 return View("SaveCategory",Category);
         }
 
+        [HttpPost]
+        public ActionResult Delete(int id)
+        {
+            var state = false;
+            var category = dgrosStore.Categories
+                .Include(c => c.Products)
+                .SingleOrDefault(c => c.CategoryId == id);
+                
 
+            if (category == null)
+                return Json("0");
+            else
+            {
+                category.State = state;
+                foreach (var product in category.Products)
+                    product.State = state;
 
+                dgrosStore.SaveChanges();
+                return Json("1");
+            }
+        }
+
+        private List<CategoryModel> CreateCategoryModelList(List<Category> categories)
+        {
+            var categoryModelList = new List<CategoryModel>();
+            foreach (var category in categories)
+            {
+                var categoryModel = new CategoryModel()
+                {
+                    CategoryId = category.CategoryId,
+                    Name = category.Name
+                };
+                categoryModelList.Add(categoryModel);
+            }
+
+            return categoryModelList;
+        }
+
+        
 
         protected override void Dispose(bool disposing)
         {

@@ -7,7 +7,8 @@ using DgrosStore.Models;
 using System.Data.Entity;
 using DgrosStore.Models.viewModels;
 using System.IO;
-using System.Web.Script.Serialization;
+using System.Data.Entity.Validation;
+
 namespace DgrosStore.Controllers
 {
     public class ProductController : Controller
@@ -36,23 +37,29 @@ namespace DgrosStore.Controllers
         [Route("Product/details/{id}")]
         public ActionResult ProductDetails(int id)
         {
+            var state = true;
             var product = dgrosStore.Products
                 .Include(p => p.Category)
+                .Where(p => p.State == state)
                 .SingleOrDefault(p => p.ProductId == id);
 
-            return View(product);
+            if (product == null)
+                return HttpNotFound();
+            else
+                return View(product);
         }
 
-        [Route("Category/{category}")]
+        [Route("Product/Category/{category}")]
         public ActionResult ProductByCategory(string category)
         {
-            var categoryProduct = dgrosStore.Products
+            var state = true;
+            var categoryProducts = dgrosStore.Products
                 .Include(p => p.Category)
                 .Where(p => p.Category.Name == category)
+                .Where(p => p.State == state)
                 .ToList();
 
-
-            return View(categoryProduct);
+            return View(categoryProducts);
         }
 
         //create
@@ -189,14 +196,30 @@ namespace DgrosStore.Controllers
         [HttpPost]
         public ActionResult Delete(int id)
         {
+            var state = false;
             var product = dgrosStore.Products.SingleOrDefault(p => p.ProductId == id);
+            var str = "";
             if (product == null)
                 return Json("0");
             else
             {
-                product.State = false;
-                dgrosStore.SaveChanges();
-                return Json("1");
+                try
+                {
+                    product.State = state;
+                    dgrosStore.SaveChanges();
+                    return Json("1");
+                }
+                catch (DbEntityValidationException dbEx)
+                {
+                    foreach (var validationErrors in dbEx.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            str += String.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        }
+                    }
+                    return Json(str);
+                }
             }
             
         }

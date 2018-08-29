@@ -218,6 +218,10 @@
     <Compile Include="Migrations\201808240246156_createIdCardColunmIntoClientTable.Designer.cs">
       <DependentUpon>201808240246156_createIdCardColunmIntoClientTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808291428527_addStateColunmToCategoryTable.cs" />
+    <Compile Include="Migrations\201808291428527_addStateColunmToCategoryTable.Designer.cs">
+      <DependentUpon>201808291428527_addStateColunmToCategoryTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Client.cs" />
@@ -235,7 +239,6 @@
     <Compile Include="Models\EntitiesConfiguration\ShoppingProductConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\StoreConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\TelephoneConfiguration.cs" />
-    <Compile Include="Models\PaginationModel.cs" />
     <Compile Include="Models\PaymentMethod.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Provider.cs" />
@@ -246,11 +249,11 @@
     <Compile Include="Models\Store.cs" />
     <Compile Include="Models\Telephone.cs" />
     <Compile Include="Models\Transaction.cs" />
+    <Compile Include="Models\viewModels\CategoryModel.cs" />
     <Compile Include="Models\viewModels\ClientViewModel.cs" />
     <Compile Include="Models\viewModels\GetProductModel.cs" />
     <Compile Include="Models\viewModels\GetProductView.cs" />
     <Compile Include="Models\viewModels\Image.cs" />
-    <Compile Include="Models\viewModels\IndexProductViewModel.cs" />
     <Compile Include="Models\viewModels\ProductJsonModel.cs" />
     <Compile Include="Models\viewModels\ProductViewModel.cs" />
     <Compile Include="Models\viewModels\SalesViewModel.cs" />
@@ -647,6 +650,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808240246156_createIdCardColunmIntoClientTable.resx">
       <DependentUpon>201808240246156_createIdCardColunmIntoClientTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808291428527_addStateColunmToCategoryTable.resx">
+      <DependentUpon>201808291428527_addStateColunmToCategoryTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

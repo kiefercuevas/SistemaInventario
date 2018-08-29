@@ -5,8 +5,9 @@ using System.Web;
 
 namespace DgrosStore.Models.viewModels
 {
-    public class IndexProductViewModel :PaginationModel
+    public class CategoryModel
     {
-        public List<Product> Products { get; set; }
+        public int CategoryId { get; set; }
+        public string Name { get; set; }
     }
 }

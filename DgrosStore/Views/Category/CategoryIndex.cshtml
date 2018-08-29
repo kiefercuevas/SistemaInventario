@@ -1,46 +1,102 @@
-﻿@model IEnumerable<DgrosStore.Models.Category>
-@{
-    ViewBag.Title = "";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-<div class="row">
-    <h2 class="col-lg-6">Categorias</h2>
-    <div class="col-lg-6 d-flex justify-content-lg-end">
-        @Html.ActionLink(" ", "Create", "Category", null, new { @class = "btn btn-success btn-xs m-2 fa fa-plus" })
-    </div>
-</div>
-@if (Model.Count() > 0)
-{
-    var cont = 1;
-    <table class="table table-hover table-responsive-md table-bordered ">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
+﻿<h2 class="text-center"> Categorias</h2>
+<br />
+<table id="CategoryTable" class="table table-hover table-responsive-md table-bordered ">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
 
-            @foreach (var category in Model)
-            {
+    </tbody>
+</table>
 
-                <tr>
-                    <th scope="row">@cont</th>
-                    <td>@Html.ActionLink(@category.Name, "ProductByCategory", "Product", new { category = category.Name }, new { @style = "color:black" })</td>
-                    <td>
-                        @Html.ActionLink(" ","edit","Category",new { id = category.CategoryId},new { @class = "btn btn-warning btn-xs fa fa-edit" })
-                        <button type="button" class="btn btn-danger btn-xs"><span class="fa fa-remove"></span></button>
-                    </td>
-                </tr>
-                { cont++; }
-            }
-        </tbody>
-    </table>
-}
-else
+
+@section scripts
 {
-    <div class="jumbotron">
-        <h1 class="text-center">No hay categorias disponibles</h1>
-    </div>
+    <script>
+        var CategoryTable = $("#CategoryTable");
+        $(document).ready(function () {
+            var datatable = CategoryTable.DataTable(
+                {
+                    ajax: {
+                        url: "Category/GetCategories",
+                        dataSrc: ""
+                    },
+                    columns: [
+                        {
+                            defaultContent: "#"
+                        },
+                        {
+                            data: "Name",
+                            render: function (data,type,category) {
+                                return `<a href="/Product/Category/${data}" style="color:black">${data}</a>`
+                            }
+                        },
+                        {
+                            data: "CategoryId",
+                            render: function (data) {
+                                return `<a class="btn btn-warning btn-xs fa fa-edit" href="/Edit/Category/${data}"></a>
+                                            <button type="button" data-id="${data}" class="btn btn-danger btn-xs fa fa-remove js-remove"></button>
+                                                   `
+                            }
+                        }
+                    ],
+                    "columnDefs": [{
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0
+                    }],
+                    "order": [[1, 'asc']],
+                    "autoWidth": false,
+                    "language": {
+                        "lengthMenu": "Mostrar _MENU_ records por pagina",
+                        "zeroRecords": "No hay coincidencias",
+                        "info": "Mostrando pagina _PAGE_ de _PAGES_",
+                        "infoEmpty": "No hay registros disponibles",
+                        "infoFiltered": "(filtrado de _MAX_ registros)",
+                        "sSearch": "<i class='fa fa-search'></i>",
+                        "loadingRecords": "Cargando...",
+                    }
+                });
+
+            datatable.on('order.dt search.dt', function () {
+                datatable.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+
+
+            CategoryTable.on("click", ".js-remove", function () {
+                var button = $(this);
+                bootbox.confirm("Estas seguro de que deseas eliminar esta categoria , se eliminaran todos los productos asociados a esta", function (result) {
+                    if (result) {
+                        $.ajax({
+                            type: "POST",
+                            url: `Category/Delete/${button.attr("data-id")}`,
+                            success: function (data) {
+                                if (parseInt(data) == 1) {
+                                    console.log(data);
+                                    datatable.row(button.parents("tr"))
+                                        .remove()
+                                        .draw();
+                                    bootbox.alert("Se ha borrado la categoria");
+                                } else {
+                                    bootbox.alert("No Se ha borrado la categoria, error interno");
+                                }
+                            },
+                            error: function (response) {
+                                bootbox.alert(response.responseText);
+                            }
+                        });
+                    }
+                })
+
+            });
+        });
+
+
+    </script>
 }
