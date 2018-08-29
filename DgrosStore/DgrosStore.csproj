@@ -256,6 +256,7 @@
     <Compile Include="Models\viewModels\CategoryModel.cs" />
     <Compile Include="Models\viewModels\ClientViewModel.cs" />
     <Compile Include="Models\viewModels\GetClientModel.cs" />
+    <Compile Include="Models\viewModels\GetClientModelSalesView.cs" />
     <Compile Include="Models\viewModels\GetProductModel.cs" />
     <Compile Include="Models\viewModels\GetProductView.cs" />
     <Compile Include="Models\viewModels\Image.cs" />

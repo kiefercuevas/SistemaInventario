@@ -13,10 +13,8 @@
             url: "Sales/GetClients",
             data: { client: client },
             success: function (data) {
-
-                data = JSON.parse(data);
                 if (data.length === 0 && client.length > 0) {
-                    selectClient.html("<option value>No existen clientes con ese nombre</option>");
+                    selectClient.html("<option value>No existen registros que coincidan</option>");
                 } else {
                     selectClient.html("");
                     $(data).each(function (index, item) {
@@ -36,8 +34,6 @@
             url: "Sales/GetProducts",
             data: { product: product },
             success: function (data) {
-
-                data = JSON.parse(data);
                 if (data.length === 0 && product.length > 0) {
                     selectProduct.html("<option value>No existen productos con ese nombre</option>");
                 } else {
@@ -58,17 +54,14 @@
     //añadir productos
     $("#addProduct").click(function () {
         var selectedProduct = $("#productSelect").val();
-
+        
         if (selectedProduct > 0) {
-            $.ajax({
-                type: "GET",
-                url: "Sales/GetProduct",
-                data: { id: selectedProduct },
-                success: function (data) {
-
-                    data = JSON.parse(data);
-
-                    if (!RepeatedProduct(data)) {
+            if (!RepeatedProduct(selectedProduct)) {
+                $.ajax({
+                    type: "GET",
+                    url: "Sales/GetProduct",
+                    data: { id: selectedProduct },
+                    success: function (data) {
 
                         //append table element
                         CreateTableElement(data);
@@ -85,14 +78,13 @@
 
                         //delete button
                         CreateDeleteButtonArray(data);
-
-                    } else {
-                        alert("El producto ya esta en la lista de productos");
                     }
-                }
-            });
+                });
+            } else {
+                bootbox.alert("El producto ya se encuentra en la lista de productos");
+            }
         } else {
-            alert("Debe elegir un producto");
+            bootbox.alert("Debe elegir un producto");
         }
     });
 
@@ -146,7 +138,7 @@
         var productRepeated = false;
 
         $(products).each(function (index, item) {
-            if (parseInt($(item).val()) === data.id) {
+            if (parseInt($(item).val()) === parseInt(data)) {
                 productRepeated = true;
             }
         });
@@ -256,14 +248,14 @@
         var products = CreateProductArray(); 
         var notClient = 0;
         var sales;
-        console.log();
+
         if (typeof (products) != "undefined") {
 
             if (products.length === 0) {
-                alert("Debe agregar algun producto para realizar una venta");
+                bootbox.alert("Debe agregar algun producto para realizar una venta");
             } else {
                 if (paymentMethod === 0) {
-                    alert("Debe seleccionar un metodo de pago");
+                    bootbox.alert("Debe seleccionar un metodo de pago");
                 } else {
 
                     if (client.length == 0) {
@@ -307,9 +299,9 @@
              listOfProducts.push(model);
         });
         if (quantityError > 0) {
-            alert("El campo cantidad de algun producto esta vacio, por favor llene el campo");
+            bootbox.alert("El campo cantidad de algun producto esta vacio, por favor llene el campo");
         } else if (discountError > 0) {
-            alert("El campo descuento de algun producto esta vacio, por favor llene el campo");
+            bootbox.alert("El campo descuento de algun producto esta vacio, por favor llene el campo");
         } else {
             return listOfProducts;
         }
@@ -333,29 +325,34 @@
     //enviar objeto via ajax
     function SendSalesObject(sales) {
 
-        if (confirm("Desea realizar esta venta")) {
-            $.ajax({
-                type: "POST",
-                url: "Sales/Save",
-                dataType: "json",
-                data: { model: JSON.stringify(sales) },
-                success: function (data) {
+        bootbox.confirm("Desea realizar esta venta", function (result) {
+            if (result) {
+                $.ajax({
+                    type: "POST",
+                    url: "Sales/Save",
+                    dataType: "json",
+                    data: { model: JSON.stringify(sales) },
+                    success: function (data) {
 
-                    if (String(data) === "true") {
-                        alert("La venta se ha realizado correctamente");
-                        window.location.reload();
-                    } else {
-                        alert("error: " +data);
+                        if (String(data) === "true") {
+                            bootbox.alert("La venta se ha realizado correctamente", function ()
+                            {
+                                window.location.reload();
+                            });
+                            
+                        } else {
+                            bootbox.alert("error: " + data);
+                        }
+
+                    },
+                    error: function (response) {
+                        bootbox.alert("error: " + response.responseText);
                     }
-                        
-                },
-                error: function (response) {
-                    alert("error: "+response.responseText);
-                }
-            });
-        } else {
-            alert("La venta no se ha realizado");
-        }
+                });
+            } else {
+                bootbox.alert("La venta no se ha realizado");
+            }
+        });
         
     }
 
