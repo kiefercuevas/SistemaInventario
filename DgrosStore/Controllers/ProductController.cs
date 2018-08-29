@@ -50,7 +50,12 @@ namespace DgrosStore.Controllers
         }
 
         [Route("Product/Category/{category}")]
-        public ActionResult ProductByCategory(string category)
+        public ActionResult ProductByCategory()
+        {
+            return View();
+        }
+
+        public ActionResult GetProductByCategory(string category)
         {
             var state = true;
             var categoryProducts = dgrosStore.Products
@@ -59,8 +64,9 @@ namespace DgrosStore.Controllers
                 .Where(p => p.State == state)
                 .ToList();
 
-            return View(categoryProducts);
-        }
+            var productModel = CreateProductModelList(categoryProducts);
+            return Json(productModel, JsonRequestBehavior.AllowGet);
+        } 
 
         //create
         [Route("Create/Product")]
