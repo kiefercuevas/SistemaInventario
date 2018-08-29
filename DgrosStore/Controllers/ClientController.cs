@@ -7,6 +7,8 @@ using DgrosStore.Models;
 using System.Data.Entity;
 using DgrosStore.Models.viewModels;
 using System.IO;
+using System.Data.Entity.Validation;
+
 namespace DgrosStore.Controllers
 {
     public class ClientController : Controller
@@ -19,18 +21,31 @@ namespace DgrosStore.Controllers
         }
         public ActionResult Index()
         {
-            var Clients = dgrosStore.Clients
-                .Include(c => c.Telephones);
 
-            return View("ClientIndex",Clients);
+            return View("ClientIndex");
+        }
+
+        public ActionResult GetClients()
+        {
+            var state = true;
+            var Clients = dgrosStore.Clients
+                .Include(c => c.Telephones)
+                .Where(c => c.State == state)
+                .ToList();
+
+            var clientModelList = CreateClientModelList(Clients);
+
+            return Json(clientModelList, JsonRequestBehavior.AllowGet);
         }
 
         [Route("Client/details/{id}")]
         public ActionResult ClientDetails(int id)
         {
+            var state = true;
             var Client = dgrosStore.Clients
                 .Include(c => c.Telephones)
                 .Include(c => c.Sales)
+                .Where(c => c.State == state)
                 .SingleOrDefault(c => c.ClientId == id);
 
             if (Client == null)
@@ -47,7 +62,7 @@ namespace DgrosStore.Controllers
                 Client = new Client(),
             };
 
-            return View("SaveClient",client);
+            return View("SaveClient", client);
         }
 
         [HttpPost]
@@ -56,6 +71,7 @@ namespace DgrosStore.Controllers
         public ActionResult Save(ClientViewModel clientView)
         {
             string url = "/Content/Images/Clients/";
+            var state = true;
 
             if (clientView.Client.ClientId == 0)
             {
@@ -78,7 +94,7 @@ namespace DgrosStore.Controllers
                     else
                         clientView.Client.Image = url + "client.png";
 
-                    if(!String.IsNullOrWhiteSpace(clientView.Telephone))
+                    if (!String.IsNullOrWhiteSpace(clientView.Telephone))
                     {
                         clientView.Client.Telephones = new List<Telephone>();
                         clientView.Client.Telephones.Add(new Telephone()
@@ -87,6 +103,7 @@ namespace DgrosStore.Controllers
                             Client = clientView.Client
                         });
                     }
+                    clientView.Client.State = state;
                     dgrosStore.Clients.Add(clientView.Client);
                 }
                 catch (Exception ex)
@@ -96,7 +113,7 @@ namespace DgrosStore.Controllers
             }
             else
             {
-                var clientInDb = dgrosStore.Clients.SingleOrDefault(c=> c.ClientId == clientView.Client.ClientId);
+                var clientInDb = dgrosStore.Clients.SingleOrDefault(c => c.ClientId == clientView.Client.ClientId);
 
                 if (!ModelState.IsValid)
                 {
@@ -104,14 +121,14 @@ namespace DgrosStore.Controllers
                     {
                         Client = clientInDb,
                     };
-                    var errors = ModelState
+                    /*var errors = ModelState
                         .Where(x => x.Value.Errors.Count > 0)
                         .Select(x => new { x.Key, x.Value.Errors })
                         .ToList();
                     var error = errors.FirstOrDefault(e => e.Key.IndexOf("T") > -1);
-                    var errorlist = error.Errors.FirstOrDefault(e => true);
-                    //return View("SaveClient", editClient);
-                    return Content(errorlist.ErrorMessage);
+                    var errorlist = error.Errors.FirstOrDefault(e => true);*/
+                    return View("SaveClient", editClient);
+                    //return Content(errorlist.ErrorMessage);
                 }
 
                 clientInDb.Name = clientView.Client.Name;
@@ -150,7 +167,10 @@ namespace DgrosStore.Controllers
         [Route("Edit/Client/{id}")]
         public ActionResult Edit(int id)
         {
-            var ClientInDb = dgrosStore.Clients.SingleOrDefault(c => c.ClientId == id);
+            var state = true;
+            var ClientInDb = dgrosStore.Clients
+                .Where(c => c.State == state)
+                .SingleOrDefault(c => c.ClientId == id);
 
             if (ClientInDb == null)
                 return HttpNotFound();
@@ -158,13 +178,42 @@ namespace DgrosStore.Controllers
             {
                 var client = new ClientViewModel()
                 {
-                    Client = ClientInDb   
+                    Client = ClientInDb
                 };
                 return View("SaveClient", client);
             }
 
         }
-
+        
+        [HttpPost]
+        public ActionResult Delete(int id)
+        {
+            var state = false;
+            var client = dgrosStore.Clients.SingleOrDefault(p => p.ClientId == id);
+            var error = "";
+            if (client == null)
+                return Json("0");
+            else
+            {
+                try
+                {
+                    client.State = state;
+                    dgrosStore.SaveChanges();
+                    return Json("1");
+                }
+                catch (DbEntityValidationException dbEx)
+                {
+                    foreach (var validationErrors in dbEx.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            error += String.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        }
+                    }
+                    return Json(error);
+                }
+            }
+        }
 
         private Image UploadMethod(ClientViewModel clientView, string url)
         {
@@ -179,6 +228,34 @@ namespace DgrosStore.Controllers
                 //ruta absoluta
                 CompletePath = path
             };
+        }
+
+        private List<GetClientModel> CreateClientModelList(List<Client> clients)
+        {
+            var clientModelList = new List<GetClientModel>();
+            foreach (var client in clients)
+            {
+                var telephone = client.Telephones
+                    .FirstOrDefault(c => c.Number.Length > 0);
+
+                var clientModel = new GetClientModel()
+                {
+                    ClientId = client.ClientId,
+                    Name = client.Name,
+                    Email = client.Email,
+                    IdCard = client.IdCard
+                };
+                if (telephone == null)
+                    clientModel.Telephone = "";
+                else
+                    clientModel.Telephone = telephone.Number.ToString();
+
+                
+               
+                clientModelList.Add(clientModel);
+            }
+
+            return clientModelList;
         }
     }
 }

@@ -222,6 +222,10 @@
     <Compile Include="Migrations\201808291428527_addStateColunmToCategoryTable.Designer.cs">
       <DependentUpon>201808291428527_addStateColunmToCategoryTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201808291827016_addStateColumnToClientTable.cs" />
+    <Compile Include="Migrations\201808291827016_addStateColumnToClientTable.Designer.cs">
+      <DependentUpon>201808291827016_addStateColumnToClientTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Client.cs" />
@@ -251,6 +255,7 @@
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\viewModels\CategoryModel.cs" />
     <Compile Include="Models\viewModels\ClientViewModel.cs" />
+    <Compile Include="Models\viewModels\GetClientModel.cs" />
     <Compile Include="Models\viewModels\GetProductModel.cs" />
     <Compile Include="Models\viewModels\GetProductView.cs" />
     <Compile Include="Models\viewModels\Image.cs" />
@@ -653,6 +658,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201808291428527_addStateColunmToCategoryTable.resx">
       <DependentUpon>201808291428527_addStateColunmToCategoryTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201808291827016_addStateColumnToClientTable.resx">
+      <DependentUpon>201808291827016_addStateColumnToClientTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

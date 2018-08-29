@@ -204,7 +204,7 @@ namespace DgrosStore.Controllers
         {
             var state = false;
             var product = dgrosStore.Products.SingleOrDefault(p => p.ProductId == id);
-            var str = "";
+            var error = "";
             if (product == null)
                 return Json("0");
             else
@@ -221,10 +221,10 @@ namespace DgrosStore.Controllers
                     {
                         foreach (var validationError in validationErrors.ValidationErrors)
                         {
-                            str += String.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                            error += String.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
                         }
                     }
-                    return Json(str);
+                    return Json(error);
                 }
             }
             

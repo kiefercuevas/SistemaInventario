@@ -10,26 +10,32 @@
         <div class="card-body border-right-0">
             <h5 class="card-title">@Model.Name @Model.LastName</h5>
             <div class="card-text">
-                <h6>@Model.IdCard</h6>
+                <h6>Cedula:  @Model.IdCard</h6>
             </div>
             <div class="card-text">
-                <h6>@(Model.Telephones.FirstOrDefault() == null ? "..." : Model.Telephones.FirstOrDefault().Number)</h6>
+                <h6>Telefono: @(Model.Telephones.FirstOrDefault() == null ? "..." : Model.Telephones.FirstOrDefault().Number)</h6>
             </div>
         </div>
     </div>
 
 
     <div class="col-sm-12 col-lg-8 card card-body border-left-0">
-        <h2>Informacion Adicional</h2>
+        <div class="row">
+            <h2 class="col col-lg-6">Informacion Adicional</h2>
+            <div class="col col-lg-6 d-flex justify-content-end">
+                @Html.ActionLink(" ", "Edit", "Client", new { id = Model.ClientId }, new { @class = "btn btn-warning btn-xs fa fa-edit pt-2 mr-2" })
+                <button type="button" data-id="@Model.ClientId" class="btn btn-danger btn-xs fa fa-remove js-remove"></button>
+            </div>
+        </div>
         <br />
         <h5>Correo electronico</h5>
         <span>@Model.Email</span><br />
         <h5>Direccion</h5>
         <span>@(String.IsNullOrWhiteSpace(Model.Direcction) ? "no hay direccion" : Model.Direcction)</span><br />
-        
+
         <div class="row">
             <div class="col-lg-4">
-                <h5>Telefonos @Html.ActionLink(" ", "Create", "Telephone", new { id = Model.ClientId },new { @class = "btn btn-success btn-sm fa fa-plus 2x my-1" })</h5>
+                <h5>Telefonos @Html.ActionLink(" ", "Create", "Telephone", new { id = Model.ClientId }, new { @class = "btn btn-success btn-sm fa fa-plus 2x my-1" })</h5>
                 @if (Model.Telephones == null || Model.Telephones.Count() == 0)
                 {
                     <span>No hay telefonos</span>
@@ -40,8 +46,10 @@
                     foreach (var telephone in Model.Telephones)
                     {
 
-                        <span><strong>@counter</strong> - @telephone.Number @Html.ActionLink(" ","Edit","Telephone",new { id = telephone.TelephoneId },new {@class = "btn btn-warning btn-sm fa fa-edit 2x my-1" })
-                            @Html.ActionLink(" ","Delete","Telephone",new { id = telephone.TelephoneId },new {@class = "btn btn-danger btn-sm fa fa-times 2x my-1" })</span><br />
+                        <span>
+                            <strong>@counter</strong> - @telephone.Number @Html.ActionLink(" ", "Edit", "Telephone", new { id = telephone.TelephoneId }, new { @class = "btn btn-warning btn-sm fa fa-edit 2x my-1" })
+                            @Html.ActionLink(" ", "Delete", "Telephone", new { id = telephone.TelephoneId }, new { @class = "btn btn-danger btn-sm fa fa-times 2x my-1" })
+                        </span><br />
                         counter++;
                     }
 
@@ -71,3 +79,42 @@
         @Html.ActionLink(" ", "Index", "Client", null, new { @class = "btn btn-info btn-block my-2 fa fa-long-arrow-left" })
     </div>
 </div>
+
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+
+            var button = $(".js-remove");
+            button.on("click",function () {
+                var button = $(this);
+                bootbox.confirm("Estas seguro de que deseas eliminar este Cliente", function (result) {
+                    if (result) {
+                        $.ajax({
+                            type: "POST",
+                            url: `/Client/Delete/${button.attr("data-id")}`,
+                            success: function (data) {
+                                if (parseInt(data) == 1) {
+                                    bootbox.alert("Se ha borrado el Cliente", function ()
+                                    {
+                                        window.location.href = "/Client";
+                                    });
+
+                                } else {
+                                    bootbox.alert("No Se ha borrado el Cliente, error interno:<br>"+data);
+                                }
+                            },
+                            error: function (response) {
+                                bootbox.alert(response.responseText);
+                            }
+                        });
+                    }
+                });
+
+            });
+        });
+    </script>
+
+}

@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using DgrosStore.Models;
 using DgrosStore.Models.viewModels;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
+
 namespace DgrosStore.Controllers
 {
     public class CategoryController : Controller
@@ -88,6 +90,7 @@ namespace DgrosStore.Controllers
         public ActionResult Delete(int id)
         {
             var state = false;
+            var error = "";
             var category = dgrosStore.Categories
                 .Include(c => c.Products)
                 .SingleOrDefault(c => c.CategoryId == id);
@@ -97,12 +100,25 @@ namespace DgrosStore.Controllers
                 return Json("0");
             else
             {
-                category.State = state;
-                foreach (var product in category.Products)
-                    product.State = state;
-
-                dgrosStore.SaveChanges();
-                return Json("1");
+                try
+                {
+                    category.State = state;
+                    foreach (var product in category.Products)
+                        product.State = state;
+                    dgrosStore.SaveChanges();
+                    return Json("1");
+                }
+                catch (DbEntityValidationException dbEx)
+                {
+                    foreach (var validationErrors in dbEx.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            error += String.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        }
+                    }
+                    return Json(error);
+                }
             }
         }
 

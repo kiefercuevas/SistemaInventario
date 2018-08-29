@@ -26,6 +26,8 @@ namespace DgrosStore.Models
         [RegularExpression(@"\b\d{3}\-?\d{7}\-?\d{1}\b", ErrorMessage ="la cedula no es valida")]
         public string IdCard { get; set; }
 
+        public bool State { get; set; }
+
         //collecion de telefonos
         public ICollection<Telephone> Telephones { get; set; }
 

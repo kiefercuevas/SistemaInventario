@@ -1,56 +1,111 @@
-﻿@model IEnumerable<DgrosStore.Models.Client>
-@{
-    ViewBag.Title = "";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+﻿
+<h2 class="text-center">Clientes</h2>
+<table id="ClientsTable" class="table table-hover table-responsive-md table-bordered ">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Cedula</th>
+            <th scope="col">Email</th>
+            <th scope="col">Telefono</th>
+            <th scope="col">Acciones</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 
-<div class="row">
-    <h2 class="col-lg-6">Clientes</h2>
-    <div class="col-lg-6 d-flex justify-content-lg-end">
-        @Html.ActionLink(" ", "Create", "Client", null, new { @class = "btn btn-success btn-xs m-2 fa fa-plus" })
-    </div>
-</div>
-@if (Model.Count() > 0)
+
+@section scripts
 {
-    var cont = 1;
-    <table class="table table-hover table-responsive-md table-bordered ">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Cedula</th>
-                <th scope="col">Email</th>
-                <th scope="col">Telefono</th>
-                <th scope="col">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
+    <script>
+        var ClientsTable = $("#ClientsTable");
+        $(document).ready(function () {
+            var datatable = ClientsTable.DataTable(
+                {
+                    ajax: {
+                        url: "/Client/GetClients",
+                        dataSrc: ""
+                    },
+                    columns: [
+                        {
+                            defaultContent: "#"
+                        },
+                        {
+                            data: "Name",
+                            render: function (data, type, client) {
+                                return `<a href="/Client/details/${client.ClientId}" style="color:black">${client.Name}</a>`
+                            }
+                        },
+                        {
+                            data: "IdCard"
+                        },
+                        {
+                            data: "Email"
+                        },
+                        {
+                            data: "Telephone"
+                        },
+                        {
+                            data: "ClientId",
+                            render: function (data) {
+                                return `<a class="btn btn-warning btn-xs fa fa-edit" href="/Edit/Client/${data}"></a>
+                                        <button type="button" data-id="${data}" class="btn btn-danger btn-xs fa fa-remove js-remove"></button>
+                                               `
+                            }
+                        }
+                    ],
+                    "columnDefs": [{
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0
+                    }],
+                    "order": [[1, 'asc']],
+                    "autoWidth": false,
+                    "language": {
+                        "lengthMenu": "Mostrar _MENU_ records por pagina",
+                        "zeroRecords": "No hay coincidencias",
+                        "info": "Mostrando pagina _PAGE_ de _PAGES_",
+                        "infoEmpty": "No hay registros disponibles",
+                        "infoFiltered": "(filtrado de _MAX_ registros)",
+                        "sSearch": "<i class='fa fa-search'></i>",
+                        "loadingRecords": "Cargando...",
+                    }
+                });
 
-            @foreach (var client in Model)
-            {
+            datatable.on('order.dt search.dt', function () {
+                datatable.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
 
-                <tr>
-                    <th scope="row">@cont</th>
-                    <td>@Html.ActionLink(client.Name, "ClientDetails", "Client", new { id = client.ClientId }, new { @style = "color:black" })</td>
-                    <td>@client.IdCard</td>
-                    <td>@client.Email</td>
-                    <td>@(client.Telephones.FirstOrDefault() == null ? "..." : client.Telephones.FirstOrDefault().Number)</td>
-                    <td>
-                        @Html.ActionLink(" ", "Edit", "Client", new { id = client.ClientId }, new { @class = "btn btn-warning btn-xs m-2 fa fa-edit" })
-                        <button type="button" class="btn btn-danger btn-xs"><span class="fa fa-remove"></span></button>
-                    </td>
-                </tr>
-                { cont++; }
-            }
-        </tbody>
-    </table>
+
+            ClientsTable.on("click", ".js-remove", function () {
+                var button = $(this);
+                bootbox.confirm("Estas seguro de que deseas eliminar este cliente", function (result) {
+                    if (result) {
+                        $.ajax({
+                            type: "POST",
+                            url: `/Client/Delete/${button.attr("data-id")}`,
+                            success: function (data) {
+                                if (parseInt(data) == 1) {
+                                    datatable.row(button.parents("tr"))
+                                        .remove()
+                                        .draw();
+                                    bootbox.alert("Se ha borrado el Cliente");
+                                } else {
+                                    bootbox.alert("No Se ha borrado el Cliente, error interno");
+                                }
+                            },
+                            error: function (response) {
+                                bootbox.alert(response.responseText);
+                            }
+                        });
+                    }
+                });
+
+            });
+        });
+
+
+    </script>
 }
-else
-{
-    <div class="jumbotron">
-        <h1 class="text-center">No hay clientes disponibles</h1>
-    </div>
-}
-
-
-
