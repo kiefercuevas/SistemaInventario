@@ -194,7 +194,7 @@ namespace DgrosStore.Controllers
                 return Json("0");
             else
             {
-                dgrosStore.Products.Remove(product);
+                product.State = false;
                 dgrosStore.SaveChanges();
                 return Json("1");
             }
