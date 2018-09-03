@@ -5,47 +5,52 @@
     $("#searchProduct").click(AddInputEffect);
 
     //clientes y productos
+    
     $("#clientInput").keyup(function () {
         var client = $("#clientInput").val();
-        var selectClient = $("#clientSelect");
-        $.ajax({
-            type: "GET",
-            url: "Sales/GetClients",
-            data: { client: client },
-            success: function (data) {
-                if (data.length === 0 && client.length > 0) {
-                    selectClient.html("<option value>No existen registros que coincidan</option>");
-                } else {
-                    selectClient.html("");
-                    $(data).each(function (index, item) {
-                        selectClient.append(`<option value="${item.ClientId}">${item.Name + " " + item.LastName}</option>`);
-                    });
+        if (client.length >= 3 || client.length == 0)
+        {  
+            var selectClient = $("#clientSelect");
+            $.ajax({
+                type: "GET",
+                url: "Sales/GetClients",
+                data: { client: client },
+                success: function (data) {
+                    if (data.length === 0 && client.length > 0) {
+                        selectClient.html("<option value>No existen registros que coincidan</option>");
+                    } else {
+                        selectClient.html("");
+                        $(data).each(function (index, item) {
+                            selectClient.append(`<option value="${item.ClientId}">${item.Name + " " + item.LastName}</option>`);
+                        });
+                    }
                 }
-
-            }
-        });
-
+            });
+        }
     });
+
     $("#productInput").keyup(function () {
         var product = $("#productInput").val();
-        var selectProduct = $("#productSelect");
-        $.ajax({
-            type: "GET",
-            url: "Sales/GetProducts",
-            data: { product: product },
-            success: function (data) {
-                if (data.length === 0 && product.length > 0) {
-                    selectProduct.html("<option value>No existen productos con ese nombre</option>");
-                } else {
-                    selectProduct.html("");
-                    $(data).each(function (index, item) {
-                        selectProduct.append(`<option value="${item.ProductId}">${item.Name}</option>`);
-                    });
+
+        if (product.length >= 3 || product.length == 0) {
+            var selectProduct = $("#productSelect");
+            $.ajax({
+                type: "GET",
+                url: "Sales/GetProducts",
+                data: { product: product },
+                success: function (data) {
+                    if (data.length === 0 && product.length > 0) {
+                        selectProduct.html("<option value>No existen productos con ese nombre</option>");
+                    } else {
+                        selectProduct.html("");
+                        $(data).each(function (index, item) {
+                            selectProduct.append(`<option value="${item.ProductId}">${item.Name}</option>`);
+                        });
+                    }
+
                 }
-
-            }
-        });
-
+            });
+        }
     });
 
 
@@ -229,10 +234,14 @@
             .children("button");
 
         $(deleteButton).last().on("click", data, function (i, item) {
-            if (confirm("Desea borrar este producto?")) {
-                $(this).parent().parent().remove();
-                UpdatePrice();
-            }
+
+            var element = $(this);
+            bootbox.confirm("Desea borrar este producto?", function (result) {
+                if (result) {
+                    element.parent().parent().remove();
+                    UpdatePrice();
+                }
+            });
         });
     }
 
@@ -341,12 +350,12 @@
                             });
                             
                         } else {
-                            bootbox.alert("error: " + data);
+                            bootbox.alert("Error: " + data);
                         }
 
                     },
                     error: function (response) {
-                        bootbox.alert("error: " + response.responseText);
+                        bootbox.alert("Error: " + response.responseText);
                     }
                 });
             } else {

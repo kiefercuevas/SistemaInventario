@@ -134,10 +134,11 @@ namespace DgrosStore.Controllers
         private Sales CreateSales(SaveSalesViewModel salesViewModel,Client client)
         {
             Sales sales;
+            var StoreId = 1;
             sales = new Sales()
             {
                 Clients = new List<Client>(),
-                StoreId = 1,
+                StoreId = StoreId,
                 Commentary = salesViewModel.commentary,
                 Date = DateTime.Now,
                 paymentMethod = salesViewModel.paymentMethod,
