@@ -3,7 +3,6 @@
 <table id="ClientsTable" class="table table-hover table-responsive-md table-bordered ">
     <thead class="thead-dark">
         <tr>
-            <th scope="col">#</th>
             <th scope="col">Nombre</th>
             <th scope="col">Cedula</th>
             <th scope="col">Email</th>
@@ -22,14 +21,13 @@
         $(document).ready(function () {
             var datatable = ClientsTable.DataTable(
                 {
+                    serverSide: true,
+                    processing: true,
                     ajax: {
                         url: "/Client/GetClients",
-                        dataSrc: ""
+                        dataSrc: "data"
                     },
                     columns: [
-                        {
-                            defaultContent: "#"
-                        },
                         {
                             data: "Name",
                             render: function (data, type, client) {
@@ -54,29 +52,31 @@
                             }
                         }
                     ],
-                    "columnDefs": [{
-                        "searchable": false,
-                        "orderable": false,
-                        "targets": 0
-                    }],
+                    "columnDefs": [
+                        { "searchable": false, "orderable": false, "targets": 4 },
+                        { "name": "Name", "targets": 0 },
+                        { "name": "IdCard", "targets": 1 },
+                        { "name": "Email", "targets": 2 },
+                        { "name": "Telephone", "targets": 3 }
+                    ],
                     "order": [[1, 'asc']],
                     "autoWidth": false,
                     "language": {
-                        "lengthMenu": "Mostrar _MENU_ records por pagina",
-                        "zeroRecords": "No hay coincidencias",
-                        "info": "Mostrando pagina _PAGE_ de _PAGES_",
-                        "infoEmpty": "No hay registros disponibles",
-                        "infoFiltered": "(filtrado de _MAX_ registros)",
-                        "sSearch": "<i class='fa fa-search'></i>",
-                        "loadingRecords": "Cargando...",
-                    }
+                        lengthMenu: "Mostrar _MENU_ registros por pagina",
+                        zeroRecords: "No hay coincidencias",
+                        infoEmpty: "No hay registros disponibles",
+                        info: "Mostrando pagina _PAGE_ de _PAGES_",
+                        infoFiltered: "(filtrado de _MAX_ registros)",
+                        sSearch: "<i class='fa fa-search'></i>",
+                        loadingRecords: "Cargando...",
+                        processing: "Cargando registros",
+                        paginate: {
+                            next: "Siguiente",
+                            previous: "Anterior"
+                        },
+                    },
+                    "lengthMenu": [5, 10, 25, 50, 75, 100]
                 });
-
-            datatable.on('order.dt search.dt', function () {
-                datatable.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
-                    cell.innerHTML = i + 1;
-                });
-            }).draw();
 
 
             ClientsTable.on("click", ".js-remove", function () {

@@ -3,7 +3,6 @@
 <table id="ProductsTable" class="table table-hover table-responsive-md table-bordered">
     <thead class="thead-dark">
         <tr>
-            <th>#</th>
             <th scope="col">Nombre</th>
             <th scope="col">Precio Compra</th>
             <th scope="col">Precio Venta</th>
@@ -25,15 +24,14 @@
         $(document).ready(function () {
             var datatable = ProductsTable.DataTable(
                 {
+                    serverSide: true,
+                    processing: true,
                     ajax: {
                         url: `/Product/GetProductByCategory`,
                         data: { category },
-                        dataSrc: ""
+                        dataSrc: "data"
                     },
                     columns: [
-                        {
-                            defaultContent: "#"
-                        },
                         {
                             data: "Name",
                             render: function (data, type, product) {
@@ -58,29 +56,32 @@
                             }
                         }
                     ],
-                    "columnDefs": [{
-                        "searchable": false,
-                        "orderable": false,
-                        "targets": 0
-                    }],
+                    "columnDefs": [
+                        { "searchable": false, "orderable": false, "targets": 4 },
+                        { "name": "Name", "targets": 0 },
+                        { "name": "ShoppingPrice", "targets": 1 },
+                        { "name": "SellingPrice", "targets": 2 },
+                        { "name": "Stock", "targets": 3 }
+                    ],
                     "order": [[1, 'asc']],
                     "autoWidth": false,
                     "language": {
-                        "lengthMenu": "Mostrar _MENU_ records por pagina",
-                        "zeroRecords": "No hay coincidencias",
-                        "info": "Mostrando pagina _PAGE_ de _PAGES_",
-                        "infoEmpty": "No hay registros disponibles",
-                        "infoFiltered": "(filtrado de _MAX_ registros)",
-                        "sSearch": "<i class='fa fa-search'></i>",
-                        "loadingRecords": "Cargando...",
-                    }
+                        lengthMenu: "Mostrar _MENU_ registros por pagina",
+                        zeroRecords: "No hay coincidencias",
+                        infoEmpty: "No hay registros disponibles",
+                        info: "Mostrando pagina _PAGE_ de _PAGES_",
+                        infoFiltered: "(filtrado de _MAX_ registros)",
+                        sSearch: "<i class='fa fa-search'></i>",
+                        loadingRecords: "Cargando...",
+                        processing: "Cargando registros",
+                        paginate: {
+                            next: "Siguiente",
+                            previous: "Anterior"
+                        },
+                    },
+                    "lengthMenu": [5, 10, 25, 50, 75, 100]
                 });
 
-            datatable.on('order.dt search.dt', function () {
-                datatable.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
-                    cell.innerHTML = i + 1;
-                });
-            }).draw();
 
 
             ProductsTable.on("click", ".js-remove", function () {

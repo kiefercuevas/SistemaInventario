@@ -26,7 +26,8 @@ namespace DgrosStore.Controllers
         }
         public ActionResult GetProducts()
         {
-            var Products = dgrosStore.Products.Where(p => p.State == true).OrderBy(p => p.ProductId).ToList();
+            var state = true;
+            var Products = dgrosStore.Products.Where(p => p.State == state).OrderBy(p => p.ProductId).ToList();
             var Datatable = new DataTable()
             {
                 Draw = Convert.ToInt32(Request["draw"]),
@@ -42,7 +43,7 @@ namespace DgrosStore.Controllers
             if (!String.IsNullOrEmpty(Datatable.Search))
             {
                 Products = dgrosStore.Products
-                .Where(p => p.State == true)
+                .Where(p => p.State == state)
                 .Where(p => p.Name.ToLower().IndexOf(Datatable.Search) > -1 ||
                             p.ShoppingPrice.ToString().IndexOf(Datatable.Search) > -1 ||
                             p.SellingPrice.ToString().IndexOf(Datatable.Search) > -1 ||
@@ -56,16 +57,14 @@ namespace DgrosStore.Controllers
             //order,paging
             var productOrdered = OrderProductsByParam(Products, Datatable.Order, Datatable.OrderDir);
             var pagingProducts = productOrdered.Skip(Datatable.Start).Take(Datatable.Length).ToList();
-            var productModel = CreateProductModelList(pagingProducts);
+            var productModelList = CreateProductModelList(pagingProducts);
 
             var ProductsModelToDataTable = new
             {
                 draw = Datatable.Draw,
                 recordsTotal = Datatable.RecordsTotal,
                 recordsFiltered = Datatable.RecordFiltered,
-                data = productModel,
-                start = Datatable.Start,
-                length = Datatable.Length
+                data = productModelList,
             };
 
             return Json(ProductsModelToDataTable, JsonRequestBehavior.AllowGet);
@@ -101,8 +100,49 @@ namespace DgrosStore.Controllers
                 .Where(p => p.State == state)
                 .ToList();
 
-            var productModel = CreateProductModelList(categoryProducts);
-            return Json(productModel, JsonRequestBehavior.AllowGet);
+            var Datatable = new DataTable()
+            {
+                Draw = Convert.ToInt32(Request["draw"]),
+                Start = Convert.ToInt32(Request["start"]),
+                Length = Convert.ToInt32(Request["length"]),
+                Search = Request["search[value]"],
+                Order = Request["columns[" + Request["order[0][column]"] + "][name]"],
+                OrderDir = Request["order[0][dir]"],
+                RecordsTotal = categoryProducts.Count(),
+                RecordFiltered = 0
+            };
+
+            if (!String.IsNullOrEmpty(Datatable.Search))
+            {
+                categoryProducts = dgrosStore.Products
+                    .Include(p => p.Category)
+                .Where(p => p.Category.Name == category)
+                .Where(p => p.State == state)
+                .Where(p => p.Name.ToLower().IndexOf(Datatable.Search) > -1 ||
+                            p.ShoppingPrice.ToString().IndexOf(Datatable.Search) > -1 ||
+                            p.SellingPrice.ToString().IndexOf(Datatable.Search) > -1 ||
+                            p.Stock.ToString().IndexOf(Datatable.Search) > -1)
+                .OrderBy(p => p.CategoryId)
+                .ToList();
+            }
+
+            Datatable.RecordFiltered = categoryProducts.Count();
+
+            //order,paging
+            var productOrdered = OrderProductsByParam(categoryProducts, Datatable.Order, Datatable.OrderDir);
+            var pagingProducts = productOrdered.Skip(Datatable.Start).Take(Datatable.Length).ToList();
+            var productModelList = CreateProductModelList(pagingProducts);
+
+
+            var ProductsModelToDataTable = new
+            {
+                draw = Datatable.Draw,
+                recordsTotal = Datatable.RecordsTotal,
+                recordsFiltered = Datatable.RecordFiltered,
+                data = productModelList,
+            };
+
+            return Json(ProductsModelToDataTable, JsonRequestBehavior.AllowGet);
         } 
 
         //create

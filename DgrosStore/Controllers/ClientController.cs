@@ -33,9 +33,46 @@ namespace DgrosStore.Controllers
                 .Where(c => c.State == state)
                 .ToList();
 
-            var clientModelList = CreateClientModelList(Clients);
+            var Datatable = new DataTable()
+            {
+                Draw = Convert.ToInt32(Request["draw"]),
+                Start = Convert.ToInt32(Request["start"]),
+                Length = Convert.ToInt32(Request["length"]),
+                Search = Request["search[value]"],
+                Order = Request["columns[" + Request["order[0][column]"] + "][name]"],
+                OrderDir = Request["order[0][dir]"],
+                RecordsTotal = Clients.Count(),
+                RecordFiltered = 0
+            };
 
-            return Json(clientModelList, JsonRequestBehavior.AllowGet);
+            if (!String.IsNullOrEmpty(Datatable.Search))
+            {
+                Clients = dgrosStore.Clients
+                .Where(c => c.State == state)
+                .Where(c => c.Name.ToLower().IndexOf(Datatable.Search) > -1 ||
+                            c.IdCard.IndexOf(Datatable.Search) > -1 ||
+                            c.Email.IndexOf(Datatable.Search) > -1 ||
+                            c.Telephones.FirstOrDefault().Number.ToString().IndexOf(Datatable.Search) > -1)
+                .OrderBy(c => c.Name)
+                .ToList();
+            }
+
+            Datatable.RecordFiltered = Clients.Count();
+
+            //order,paging
+            var productOrdered = OrderProductsByParam(Clients, Datatable.Order, Datatable.OrderDir);
+            var paginClients = productOrdered.Skip(Datatable.Start).Take(Datatable.Length).ToList();
+            var clientModelList = CreateClientModelList(paginClients);
+
+            var clientModelToDatatable = new
+            {
+                draw = Datatable.Draw,
+                recordsTotal = Datatable.RecordsTotal,
+                recordsFiltered = Datatable.RecordFiltered,
+                data = clientModelList
+            };
+
+            return Json(clientModelToDatatable, JsonRequestBehavior.AllowGet);
         }
 
         [Route("Client/details/{id}")]
@@ -121,14 +158,8 @@ namespace DgrosStore.Controllers
                     {
                         Client = clientInDb,
                     };
-                    /*var errors = ModelState
-                        .Where(x => x.Value.Errors.Count > 0)
-                        .Select(x => new { x.Key, x.Value.Errors })
-                        .ToList();
-                    var error = errors.FirstOrDefault(e => e.Key.IndexOf("T") > -1);
-                    var errorlist = error.Errors.FirstOrDefault(e => true);*/
+                    
                     return View("SaveClient", editClient);
-                    //return Content(errorlist.ErrorMessage);
                 }
 
                 clientInDb.Name = clientView.Client.Name;
@@ -256,6 +287,42 @@ namespace DgrosStore.Controllers
             }
 
             return clientModelList;
+        }
+
+        private List<Client> OrderProductsByParam(List<Client> clients, string order, string direction)
+        {
+            if (!String.IsNullOrWhiteSpace(order) && !String.IsNullOrWhiteSpace(direction))
+            {
+                if (direction == "asc")
+                    clients = SwitchStructureAsc(clients, order);
+                else if (direction == "desc")
+                    clients = SwitchStructureDesc(clients, order);
+            }
+            return clients;
+        }
+
+        private List<Client> SwitchStructureAsc(List<Client> clients, string order)
+        {
+            switch (order)
+            {
+                case "Name": clients = clients.OrderBy(p => p.Name).ToList(); return clients;
+                case "IdCard": clients = clients.OrderBy(p => p.IdCard).ToList(); return clients;
+                case "Email": clients = clients.OrderBy(p => p.Email).ToList(); return clients;
+                case "Stock": clients = clients.OrderBy(p => p.Telephones.FirstOrDefault().Number.ToString()).ToList(); return clients;
+                default: clients = clients.ToList(); return clients;
+            }
+        }
+        private List<Client> SwitchStructureDesc(List<Client> clients, string order)
+        {
+
+            switch (order)
+            {
+                case "Name": clients = clients.OrderByDescending(p => p.Name).ToList(); return clients;
+                case "IdCard": clients = clients.OrderByDescending(p => p.IdCard).ToList(); return clients;
+                case "Email": clients = clients.OrderByDescending(p => p.Email).ToList(); return clients;
+                case "Stock": clients = clients.OrderByDescending(p => p.Telephones.FirstOrDefault().Number.ToString()).ToList(); return clients;
+                default: clients = clients.ToList(); return clients;
+            }
         }
     }
 }
