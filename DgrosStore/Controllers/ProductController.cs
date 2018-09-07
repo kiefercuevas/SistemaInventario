@@ -26,12 +26,49 @@ namespace DgrosStore.Controllers
         }
         public ActionResult GetProducts()
         {
-            var Products = dgrosStore.Products
-                .Where(p => p.State == true)
-                .ToList();
+            var Products = dgrosStore.Products.Where(p => p.State == true).OrderBy(p => p.ProductId).ToList();
+            var Datatable = new DataTable()
+            {
+                Draw = Convert.ToInt32(Request["draw"]),
+                Start = Convert.ToInt32(Request["start"]),
+                Length = Convert.ToInt32(Request["length"]),
+                Search = Request["search[value]"],
+                Order = Request["columns[" + Request["order[0][column]"] + "][name]"],
+                OrderDir = Request["order[0][dir]"],
+                RecordsTotal = Products.Count(),
+                RecordFiltered = 0
+            };
 
-            var productModel = CreateProductModelList(Products);
-            return Json(productModel, JsonRequestBehavior.AllowGet);
+            if (!String.IsNullOrEmpty(Datatable.Search))
+            {
+                Products = dgrosStore.Products
+                .Where(p => p.State == true)
+                .Where(p => p.Name.ToLower().IndexOf(Datatable.Search) > -1 ||
+                            p.ShoppingPrice.ToString().IndexOf(Datatable.Search) > -1 ||
+                            p.SellingPrice.ToString().IndexOf(Datatable.Search) > -1 ||
+                            p.Stock.ToString().IndexOf(Datatable.Search) > -1)
+                .OrderBy(p => p.CategoryId)
+                .ToList();
+            }
+
+            Datatable.RecordFiltered = Products.Count();
+
+            //order,paging
+            var productOrdered = OrderProductsByParam(Products, Datatable.Order, Datatable.OrderDir);
+            var pagingProducts = productOrdered.Skip(Datatable.Start).Take(Datatable.Length).ToList();
+            var productModel = CreateProductModelList(pagingProducts);
+
+            var ProductsModelToDataTable = new
+            {
+                draw = Datatable.Draw,
+                recordsTotal = Datatable.RecordsTotal,
+                recordsFiltered = Datatable.RecordFiltered,
+                data = productModel,
+                start = Datatable.Start,
+                length = Datatable.Length
+            };
+
+            return Json(ProductsModelToDataTable, JsonRequestBehavior.AllowGet);
         }
    
         [Route("Product/details/{id}")]
@@ -238,9 +275,9 @@ namespace DgrosStore.Controllers
 
         private Image UploadMethod(ProductViewModel productView,string url)
         {
-                //para obtener el nombre y la extension del archivo
-                string filename = Path.GetFileName(productView.UploadedFile.FileName);
-                var path = Path.Combine(Server.MapPath(url) + filename);
+            //para obtener el nombre y la extension del archivo
+            string filename = Path.GetFileName(productView.UploadedFile.FileName);
+            var path = Path.Combine(Server.MapPath(url) + filename);
 
             return new Image() {
                 //imagePath es la ruta relativa
@@ -268,5 +305,45 @@ namespace DgrosStore.Controllers
 
             return productModelList;
         }
+
+        private List<Product> OrderProductsByParam(List<Product>products,string order,string direction)
+        {
+            if (!String.IsNullOrWhiteSpace(order) && !String.IsNullOrWhiteSpace(direction))
+            {
+                if(direction == "asc")
+                    products = SwitchStructureAsc(products, order);
+                else if(direction == "desc")
+                    products = SwitchStructureDesc(products, order);
+            }
+            return products;
+        }
+
+        private List<Product> SwitchStructureAsc(List<Product> products,string order)
+        {
+            switch (order)
+            {
+                case "Name":          products = products.OrderBy(p => p.Name).ToList(); return products;
+                case "ShoppingPrice": products = products.OrderBy(p => p.ShoppingPrice).ToList(); return products;
+                case "SellingPrice":  products = products.OrderBy(p => p.SellingPrice).ToList(); return products;
+                case "Stock":         products = products.OrderBy(p => p.Stock).ToList(); return products;
+                default:              products = products.ToList(); return products;
+            }
+        }
+        private List<Product> SwitchStructureDesc(List<Product> products, string order)
+        {
+            switch (order)
+            {
+                case "Name":          products = products.OrderByDescending(p => p.Name).ToList(); return products;
+                case "ShoppingPrice": products = products.OrderByDescending(p => p.ShoppingPrice).ToList(); return products;
+                case "SellingPrice":  products = products.OrderByDescending(p => p.SellingPrice).ToList(); return products;
+                case "Stock":         products = products.OrderByDescending(p => p.Stock).ToList(); return products;
+                default:              products = products.ToList();return products;
+            }
+        }
+
+
+
+
+
     }
 }

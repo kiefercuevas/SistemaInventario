@@ -255,6 +255,7 @@
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\viewModels\CategoryModel.cs" />
     <Compile Include="Models\viewModels\ClientViewModel.cs" />
+    <Compile Include="Models\viewModels\DataTable.cs" />
     <Compile Include="Models\viewModels\GetClientModel.cs" />
     <Compile Include="Models\viewModels\GetClientModelSalesView.cs" />
     <Compile Include="Models\viewModels\GetProductModel.cs" />
