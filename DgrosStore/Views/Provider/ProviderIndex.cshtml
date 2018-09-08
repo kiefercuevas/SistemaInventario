@@ -1,22 +1,9 @@
-﻿@model IEnumerable<DgrosStore.Models.Provider>
-@{
-    ViewBag.Title = "";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+﻿
+<h2 class="text-center mb-5">Proveedores</h2>
 
-<div class="row">
-    <h2 class="col-lg-6">Proveedores</h2>
-    <div class="col-lg-6 d-flex justify-content-lg-end">
-        @Html.ActionLink(" ", "Create", "Provider", null, new { @class = "btn btn-success btn-xs m-2 fa fa-plus" })
-    </div>
-</div>
-@if (Model.Count() > 0)
-{
-    var cont = 1;
-    <table class="table table-hover table-responsive-md table-bordered ">
+    <table id="ProviderTable" class="table table-hover table-responsive-md table-bordered ">
         <thead class="thead-dark">
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Correo</th>
                 <th scope="col">Telefono</th>
@@ -25,28 +12,98 @@
         </thead>
         <tbody>
 
-            @foreach (var provider in Model)
-            {
-
-                <tr>
-                    <th scope="row">@cont</th>
-                    <td>@Html.ActionLink(provider.Name, "ProviderDetails", "Provider", new { id = provider.ProviderId }, new { @style = "color:black" })</td>
-                    <td>@provider.Email</td>
-                    <td>@provider.Telephone</td>
-                    <td>
-                        @Html.ActionLink(" ", "Edit", "Provider", new { id = provider.ProviderId }, new { @class = "btn btn-warning btn-xs m-2 fa fa-edit" })
-                        <button type="button" class="btn btn-danger btn-xs"><span class="fa fa-remove"></span></button>
-                    </td>
-                </tr>
-                { cont++; }
-            }
         </tbody>
     </table>
-}
-else
-{
-    <div class="jumbotron">
-        <h1 class="text-center">No hay Proveedores disponibles</h1>
-    </div>
-}
 
+
+@section scripts
+{
+    <script>
+        var ProviderTable = $("#ProviderTable");
+        $(document).ready(function () {
+            var datatable = ProviderTable.DataTable(
+                {
+                    ajax: {
+                        url: "Provider/GetProviders",
+                        dataSrc: ""
+                    },
+                    columns: [
+
+                        {
+                            data: "Name",
+                            render: function (data,type,provider) {
+                                return `<a href="/ProviderDetails/${provider.providerId}" style="color:black">${data}</a>`
+                            }
+                        },
+                        {
+                            data:"Email"
+                        },
+                        {
+                            data:"Telephone"
+                        },
+                        {
+                            data: "ProviderId",
+                            render: function (data) {
+                                return `<a class="btn btn-warning btn-xs fa fa-edit" href="/Provider/Edit/${data}"></a>
+                                            <button type="button" data-id="${data}" class="btn btn-danger btn-xs fa fa-remove js-remove"></button>
+                                                   `
+                            }
+                        }
+                    ],
+                    "columnDefs": [
+                        { "searchable": false, "orderable": false, "targets": 3 },
+                        { "name": "Name", "targets": 0 },
+                        { "name": "Email", "targets": 1 },
+                        { "name": "Telephone", "targets": 2 },
+                    ],
+                    "order": [[1, 'asc']],
+                    "autoWidth": false,
+                    "language": {
+                        lengthMenu: "Mostrar _MENU_ registros por pagina",
+                        zeroRecords: "No hay coincidencias",
+                        infoEmpty: "No hay registros disponibles",
+                        info: "Mostrando pagina _PAGE_ de _PAGES_",
+                        infoFiltered: "(filtrado de _MAX_ registros)",
+                        sSearch: "<i class='fa fa-search'></i>",
+                        loadingRecords: "Cargando...",
+                        processing: "Cargando registros",
+                        paginate: {
+                            next: "Siguiente",
+                            previous: "Anterior"
+                        },
+                    },
+                    "lengthMenu": [5, 10, 25, 50, 75, 100]
+                });
+
+
+            ProviderTable.on("click", ".js-remove", function () {
+                var button = $(this);
+                bootbox.confirm("Estas seguro de que deseas eliminar esta proveedor , se eliminaran todas las compras asociadas a este", function (result) {
+                    if (result) {
+                        $.ajax({
+                            type: "POST",
+                            url: `Provider/Delete/${button.attr("data-id")}`,
+                            success: function (data) {
+                                if (parseInt(data) == 1) {
+                                    console.log(data);
+                                    datatable.row(button.parents("tr"))
+                                        .remove()
+                                        .draw();
+                                    bootbox.alert("Se ha borrado el proveedor");
+                                } else {
+                                    bootbox.alert("No Se ha borrado el proveedor, error interno");
+                                }
+                            },
+                            error: function (response) {
+                                bootbox.alert(response.responseText);
+                            }
+                        });
+                    }
+                })
+
+            });
+        });
+
+
+    </script>
+}

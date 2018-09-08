@@ -16,8 +16,12 @@ namespace DgrosStore.Models
         [EmailAddress(ErrorMessage = "El email no es valido")]
         public string Email { get; set; }
 
+
         [Required(ErrorMessage = "Debe introducir el telefono del proveedor")]
+        [RegularExpression(@"\b8[024]9\-?\d{3}\-?\d{4}\b", ErrorMessage = "El telefono no es un telefono valido")]
         public string Telephone { get; set; }
+
+        public bool State { get; set; }
 
         //collecion de compras a Proveedores
         public ICollection<Shopping> Shoppings { get; set; }

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using DgrosStore.Models;
+using DgrosStore.Models.viewModels;
+using System.Data.Entity;
+
 namespace DgrosStore.Controllers
 {
     public class ProviderController : Controller
@@ -28,8 +31,19 @@ namespace DgrosStore.Controllers
 
         public ActionResult Index()
         {
-            var providers = dgrosStore.Providers.ToList();
-            return View("ProviderIndex",providers);
+            
+            return View("ProviderIndex");
+        }
+
+        public ActionResult GetProviders()
+        {
+            var providers = dgrosStore.Providers
+                .Where(p => p.State == true)
+                .ToList();
+
+            var providerModel = CreateClientModelList(providers);
+
+            return Json(providerModel, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Create()
@@ -51,6 +65,7 @@ namespace DgrosStore.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Save(Provider provider)
         {
+            var state = true;
             if(provider.ProviderId == 0)
             {
                 if (!ModelState.IsValid)
@@ -58,6 +73,7 @@ namespace DgrosStore.Controllers
                     var emptyProdider = new Provider();
                     return View("SaveProvider", emptyProdider);
                 }
+                provider.State = state;
                 dgrosStore.Providers.Add(provider);
             }
             else
@@ -79,6 +95,59 @@ namespace DgrosStore.Controllers
 
             dgrosStore.SaveChanges();
             return RedirectToAction("Index","Provider");
+        }
+
+        [HttpPost]
+        public ActionResult Delete(int id)
+        {
+            var state = false;
+            var provider = dgrosStore.Providers.Include(p => p.Shoppings).SingleOrDefault(p => p.ProviderId == id);
+            var error = "";
+            if (provider == null)
+                return Json("0");
+            else
+            {
+                try
+                {
+
+                    foreach (var shopping in provider.Shoppings)
+                        shopping.State = state;
+
+                    provider.State = state;
+                    dgrosStore.SaveChanges();
+                    return Json("1");
+                }
+                catch (DbEntityValidationException dbEx)
+                {
+                    foreach (var validationErrors in dbEx.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            error += String.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        }
+                    }
+                    return Json(error);
+                }
+            }
+        }
+
+
+        private List<GetProvidersModel> CreateClientModelList(List<Provider> providers)
+        {
+            var providersModelList = new List<GetProvidersModel>();
+            foreach (var provider in providers)
+            {
+                var ProviderModel = new GetProvidersModel()
+                {
+                    ProviderId = provider.ProviderId,
+                    Name = provider.Name,
+                    Email = provider.Email,
+                    Telephone = provider.Telephone
+                };
+                providersModelList.Add(ProviderModel);
+            }
+
+            return providersModelList;
         }
 
     }

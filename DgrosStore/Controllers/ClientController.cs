@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using DgrosStore.Models;
 using System.Data.Entity;
@@ -52,7 +51,7 @@ namespace DgrosStore.Controllers
                 .Where(c => c.Name.ToLower().IndexOf(Datatable.Search) > -1 ||
                             c.IdCard.IndexOf(Datatable.Search) > -1 ||
                             c.Email.IndexOf(Datatable.Search) > -1 ||
-                            c.Telephones.FirstOrDefault().Number.ToString().IndexOf(Datatable.Search) > -1)
+                            c.Telephones.FirstOrDefault(t => t.Number.Length > 0).Number.ToString().IndexOf(Datatable.Search) > -1)
                 .OrderBy(c => c.Name)
                 .ToList();
             }
@@ -220,7 +219,7 @@ namespace DgrosStore.Controllers
         public ActionResult Delete(int id)
         {
             var state = false;
-            var client = dgrosStore.Clients.SingleOrDefault(p => p.ClientId == id);
+            var client = dgrosStore.Clients.Include(c => c.Sales).SingleOrDefault(p => p.ClientId == id);
             var error = "";
             if (client == null)
                 return Json("0");
@@ -228,6 +227,10 @@ namespace DgrosStore.Controllers
             {
                 try
                 {
+
+                    foreach(var sale in client.Sales)
+                        sale.State = state;
+
                     client.State = state;
                     dgrosStore.SaveChanges();
                     return Json("1");
