@@ -5,11 +5,15 @@ using System.Web;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using DgrosStore.Models.customValidation;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace DgrosStore.Models
 {
     public class Product
     {
         public int ProductId { get; set; }
+
+        [ProductNameValidation]
         [Required(ErrorMessage ="El nombre del producto no puede estar vacio")]
         [MinLength(3,ErrorMessage ="El nombre debe contener al menos 3 caracteres")]
         [MaxLength(20,ErrorMessage ="El nombre es demasiado largo , debe ser 20 caracteres o menos")]

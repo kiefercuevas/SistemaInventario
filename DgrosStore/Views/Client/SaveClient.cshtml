@@ -1,8 +1,5 @@
 ﻿@model DgrosStore.Models.viewModels.ClientViewModel
-@{
-    ViewBag.Title = "";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+
 <div class="row">
     <h2 class="col-lg-6">@(Model.Client.Name.IsEmpty() ? "Clientes" : Model.Client.Name)</h2>
     <div class="col-lg-4 d-flex justify-content-lg-end">

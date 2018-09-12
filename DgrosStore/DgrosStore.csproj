@@ -230,10 +230,26 @@
     <Compile Include="Migrations\201809080200521_addStateColumnToProviderTable.Designer.cs">
       <DependentUpon>201809080200521_addStateColumnToProviderTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809080255356_updateNameColunmInProductTableToUnique.cs" />
+    <Compile Include="Migrations\201809080255356_updateNameColunmInProductTableToUnique.Designer.cs">
+      <DependentUpon>201809080255356_updateNameColunmInProductTableToUnique.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809080314058_addUniqueConstraintToNameColunmInCategoryTableAndChangeLengthTo50.cs" />
+    <Compile Include="Migrations\201809080314058_addUniqueConstraintToNameColunmInCategoryTableAndChangeLengthTo50.Designer.cs">
+      <DependentUpon>201809080314058_addUniqueConstraintToNameColunmInCategoryTableAndChangeLengthTo50.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809080328181_removeUniquePropertiesByDataAnotationToProductAndCategory.cs" />
+    <Compile Include="Migrations\201809080328181_removeUniquePropertiesByDataAnotationToProductAndCategory.Designer.cs">
+      <DependentUpon>201809080328181_removeUniquePropertiesByDataAnotationToProductAndCategory.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\customValidation\CategoryNameValidation.cs" />
+    <Compile Include="Models\customValidation\ClientEmailValidation.cs" />
+    <Compile Include="Models\customValidation\ClientTelephoneValidation.cs" />
     <Compile Include="Models\customValidation\IdCardValidation.cs" />
+    <Compile Include="Models\customValidation\ProductNameValidation.cs" />
     <Compile Include="Models\customValidation\SellingPriceValidation.cs" />
     <Compile Include="Models\customValidation\ShoppingPriceValidation.cs" />
     <Compile Include="Models\DgrosStoreContext.cs" />
@@ -671,6 +687,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809080200521_addStateColumnToProviderTable.resx">
       <DependentUpon>201809080200521_addStateColumnToProviderTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809080255356_updateNameColunmInProductTableToUnique.resx">
+      <DependentUpon>201809080255356_updateNameColunmInProductTableToUnique.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809080314058_addUniqueConstraintToNameColunmInCategoryTableAndChangeLengthTo50.resx">
+      <DependentUpon>201809080314058_addUniqueConstraintToNameColunmInCategoryTableAndChangeLengthTo50.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809080328181_removeUniquePropertiesByDataAnotationToProductAndCategory.resx">
+      <DependentUpon>201809080328181_removeUniquePropertiesByDataAnotationToProductAndCategory.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
