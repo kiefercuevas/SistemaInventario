@@ -60,7 +60,7 @@
             <div class="col-sm-12 col-lg-4 my-4">
                 <img height="250" width="250" src="@(Model.Client.Image == null ? @"\Content\Images\client.png" : Model.Client.Image)" class="rounded float-left" alt="...">
             </div>
-            @Html.HiddenFor(c => c.Client.ClientId)
+            @Html.HiddenFor(c => c.Client.PersonId)
             @Html.AntiForgeryToken()
         </div>
     </div>

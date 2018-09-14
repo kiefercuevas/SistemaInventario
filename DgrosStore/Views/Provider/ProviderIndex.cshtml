@@ -6,7 +6,8 @@
             <tr>
                 <th scope="col">Nombre</th>
                 <th scope="col">Correo</th>
-                <th scope="col">Telefono</th>
+                <th scope="col">Rnc</th>
+                <th scope="col">Telephone</th>
                 <th scope="col">Acciones</th>
             </tr>
         </thead>
@@ -32,14 +33,17 @@
                         {
                             data: "Name",
                             render: function (data,type,provider) {
-                                return `<a href="/ProviderDetails/${provider.providerId}" style="color:black">${data}</a>`
+                                return `<a href="/Provider/Details/${provider.ProviderId}" style="color:black">${data}</a>`
                             }
                         },
                         {
                             data:"Email"
                         },
                         {
-                            data:"Telephone"
+                            data:"Rnc"
+                        },
+                        {
+                            data: "Telephone"
                         },
                         {
                             data: "ProviderId",
@@ -54,7 +58,8 @@
                         { "searchable": false, "orderable": false, "targets": 3 },
                         { "name": "Name", "targets": 0 },
                         { "name": "Email", "targets": 1 },
-                        { "name": "Telephone", "targets": 2 },
+                        { "name": "Rnc", "targets": 2 },
+                        { "name": "Telephone", "targets": 3}
                     ],
                     "order": [[1, 'asc']],
                     "autoWidth": false,

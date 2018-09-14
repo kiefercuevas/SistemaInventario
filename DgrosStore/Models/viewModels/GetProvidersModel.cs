@@ -5,6 +5,7 @@
         public int ProviderId { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+        public string Rnc { get; set; }
         public string Telephone { get; set; }
     }
 }

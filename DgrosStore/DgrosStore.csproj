@@ -242,21 +242,37 @@
     <Compile Include="Migrations\201809080328181_removeUniquePropertiesByDataAnotationToProductAndCategory.Designer.cs">
       <DependentUpon>201809080328181_removeUniquePropertiesByDataAnotationToProductAndCategory.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809140300190_addPersonTableToScallaBility.cs" />
+    <Compile Include="Migrations\201809140300190_addPersonTableToScallaBility.Designer.cs">
+      <DependentUpon>201809140300190_addPersonTableToScallaBility.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809140341274_correctionToPersonTable.cs" />
+    <Compile Include="Migrations\201809140341274_correctionToPersonTable.Designer.cs">
+      <DependentUpon>201809140341274_correctionToPersonTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809141717488_clientModificationClientIdColumn.cs" />
+    <Compile Include="Migrations\201809141717488_clientModificationClientIdColumn.Designer.cs">
+      <DependentUpon>201809141717488_clientModificationClientIdColumn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809141734532_providerModificationProviderIdColumnAndRNCcolum.cs" />
+    <Compile Include="Migrations\201809141734532_providerModificationProviderIdColumnAndRNCcolum.Designer.cs">
+      <DependentUpon>201809141734532_providerModificationProviderIdColumnAndRNCcolum.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\customValidation\CategoryNameValidation.cs" />
-    <Compile Include="Models\customValidation\ClientEmailValidation.cs" />
+    <Compile Include="Models\customValidation\PersonEmailValidation.cs" />
     <Compile Include="Models\customValidation\ClientTelephoneValidation.cs" />
     <Compile Include="Models\customValidation\IdCardValidation.cs" />
     <Compile Include="Models\customValidation\ProductNameValidation.cs" />
     <Compile Include="Models\customValidation\ProviderEmailValidation.cs" />
-    <Compile Include="Models\customValidation\ProviderTelephoneValidation.cs" />
     <Compile Include="Models\customValidation\SellingPriceValidation.cs" />
     <Compile Include="Models\customValidation\ShoppingPriceValidation.cs" />
     <Compile Include="Models\DgrosStoreContext.cs" />
     <Compile Include="Models\EntitiesConfiguration\CategoryConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\ClientConfiguration.cs" />
+    <Compile Include="Models\EntitiesConfiguration\PersonConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\ProductConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\ProviderConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\SalesConfigutation.cs" />
@@ -266,6 +282,7 @@
     <Compile Include="Models\EntitiesConfiguration\StoreConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\TelephoneConfiguration.cs" />
     <Compile Include="Models\PaymentMethod.cs" />
+    <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Provider.cs" />
     <Compile Include="Models\Sales.cs" />
@@ -286,6 +303,7 @@
     <Compile Include="Models\viewModels\Image.cs" />
     <Compile Include="Models\viewModels\ProductJsonModel.cs" />
     <Compile Include="Models\viewModels\ProductViewModel.cs" />
+    <Compile Include="Models\viewModels\ProviderViewModel.cs" />
     <Compile Include="Models\viewModels\SalesViewModel.cs" />
     <Compile Include="Models\viewModels\SaveSalesViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -698,6 +716,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809080328181_removeUniquePropertiesByDataAnotationToProductAndCategory.resx">
       <DependentUpon>201809080328181_removeUniquePropertiesByDataAnotationToProductAndCategory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809140300190_addPersonTableToScallaBility.resx">
+      <DependentUpon>201809140300190_addPersonTableToScallaBility.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809140341274_correctionToPersonTable.resx">
+      <DependentUpon>201809140341274_correctionToPersonTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809141717488_clientModificationClientIdColumn.resx">
+      <DependentUpon>201809141717488_clientModificationClientIdColumn.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809141734532_providerModificationProviderIdColumnAndRNCcolum.resx">
+      <DependentUpon>201809141734532_providerModificationProviderIdColumnAndRNCcolum.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

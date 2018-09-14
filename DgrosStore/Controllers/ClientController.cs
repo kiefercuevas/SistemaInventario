@@ -82,7 +82,7 @@ namespace DgrosStore.Controllers
                 .Include(c => c.Telephones)
                 .Include(c => c.Sales)
                 .Where(c => c.State == state)
-                .SingleOrDefault(c => c.ClientId == id);
+                .SingleOrDefault(c => c.PersonId == id);
 
             if (Client == null)
                 return HttpNotFound();
@@ -108,8 +108,9 @@ namespace DgrosStore.Controllers
         {
             string url = "/Content/Images/Clients/";
             var state = true;
+            var type = "client";
 
-            if (clientView.Client.ClientId == 0)
+            if (clientView.Client.PersonId == 0)
             {
                 if (!ModelState.IsValid)
                 {
@@ -132,14 +133,17 @@ namespace DgrosStore.Controllers
 
                     if (!String.IsNullOrWhiteSpace(clientView.Telephone))
                     {
-                        clientView.Client.Telephones = new List<Telephone>();
-                        clientView.Client.Telephones.Add(new Telephone()
+                        clientView.Client.Telephones = new List<Telephone>
                         {
-                            Number = clientView.Telephone,
-                            Client = clientView.Client
-                        });
+                            new Telephone()
+                            {
+                                Number = clientView.Telephone,
+                                Person = clientView.Client
+                            }
+                        };
                     }
                     clientView.Client.State = state;
+                    clientView.Client.Type = type.ToLower();
                     dgrosStore.Clients.Add(clientView.Client);
                 }
                 catch (Exception ex)
@@ -149,7 +153,7 @@ namespace DgrosStore.Controllers
             }
             else
             {
-                var clientInDb = dgrosStore.Clients.SingleOrDefault(c => c.ClientId == clientView.Client.ClientId);
+                var clientInDb = dgrosStore.Clients.SingleOrDefault(c => c.PersonId == clientView.Client.PersonId);
 
                 if (!ModelState.IsValid)
                 {
@@ -157,7 +161,6 @@ namespace DgrosStore.Controllers
                     {
                         Client = clientInDb,
                     };
-                    
                     return View("SaveClient", editClient);
                 }
 
@@ -184,9 +187,23 @@ namespace DgrosStore.Controllers
                     }
                 }
             }
-
-            dgrosStore.SaveChanges();
-            return RedirectToAction("Index", "Client");
+            try
+            {
+                dgrosStore.SaveChanges();
+                return RedirectToAction("Index", "Client");
+            }catch(DbEntityValidationException ex)
+            {
+                string data = "";
+                foreach (var error in ex.EntityValidationErrors)
+                {
+                    foreach (var err in error.ValidationErrors)
+                    {
+                        data += err.PropertyName + "-" + err.ErrorMessage; 
+                    }
+                }
+                return Content(data);
+            }
+            
         }
 
         protected override void Dispose(bool disposing)
@@ -200,7 +217,7 @@ namespace DgrosStore.Controllers
             var state = true;
             var ClientInDb = dgrosStore.Clients
                 .Where(c => c.State == state)
-                .SingleOrDefault(c => c.ClientId == id);
+                .SingleOrDefault(c => c.PersonId == id);
 
             if (ClientInDb == null)
                 return HttpNotFound();
@@ -214,12 +231,12 @@ namespace DgrosStore.Controllers
             }
 
         }
-        
+
         [HttpPost]
         public ActionResult Delete(int id)
         {
             var state = false;
-            var client = dgrosStore.Clients.Include(c => c.Sales).SingleOrDefault(p => p.ClientId == id);
+            var client = dgrosStore.Clients.Include(c => c.Sales).SingleOrDefault(p => p.PersonId == id);
             var error = "";
             if (client == null)
                 return Json("0");
@@ -228,7 +245,7 @@ namespace DgrosStore.Controllers
                 try
                 {
 
-                    foreach(var sale in client.Sales)
+                    foreach (var sale in client.Sales)
                         sale.State = state;
 
                     client.State = state;
@@ -274,7 +291,7 @@ namespace DgrosStore.Controllers
 
                 var clientModel = new GetClientModel()
                 {
-                    ClientId = client.ClientId,
+                    ClientId = client.PersonId,
                     Name = client.Name,
                     Email = client.Email,
                     IdCard = client.IdCard
@@ -284,8 +301,8 @@ namespace DgrosStore.Controllers
                 else
                     clientModel.Telephone = telephone.Number.ToString();
 
-                
-               
+
+
                 clientModelList.Add(clientModel);
             }
 

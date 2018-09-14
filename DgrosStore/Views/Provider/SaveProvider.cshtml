@@ -1,4 +1,4 @@
-﻿@model DgrosStore.Models.Provider
+﻿@model DgrosStore.Models.viewModels.ProviderViewModel
 @{
     ViewBag.Title = "";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,7 +6,7 @@
 
 
 <div class="row">
-    <h2 class="col-lg-4">@(Model.ProviderId == 0 ? "Crear" : Model.Name)</h2>
+    <h2 class="col-lg-4">@(Model.Provider.ProviderId == 0 ? "Crear" : Model.Provider.Name)</h2>
     <div class="col-lg-2 d-flex justify-content-lg-end">
         @Html.ActionLink(" ", "Index", "Provider", null, new { @class = "btn btn-info my-2 fa fa-times" })
     </div>
@@ -19,28 +19,36 @@
         <div class="col-lg-6">
             <div class="form-group">
                 <label for="name">Nombre</label>
-                @Html.TextBoxFor(p => p.Name, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.Name)
+                @Html.TextBoxFor(p => p.Provider.Name, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Provider.Name)
+            </div>
+            <div class="form-group">
+                <label for="RNC">RNC</label>
+                @Html.TextBoxFor(p => p.Provider.Rnc, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Provider.Rnc)
             </div>
             <div class="form-group">
                 <label for="email">Correo</label>
-                @Html.TextBoxFor(p => p.Email, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.Email)
+                @Html.TextBoxFor(p => p.Provider.Email, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Provider.Email)
             </div>
-            <div class="form-group">
-                <label for="Telephone">Telefono</label>
-                @Html.TextBoxFor(p => p.Telephone, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.Telephone)
+            @if (Model.Provider.ProviderId == 0)
+            {
+                <div class="form-group">
+                    <label for="Telephone">Telefono</label>
+                    @Html.TextBoxFor(p => p.Telephone, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Telephone)
+                </div>
+            }
+                <div class="form-group">
+                    <label for="">Direccion</label>
+                    @Html.TextAreaFor(p => p.Provider.Direcction, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Provider.Direcction)
+                    @Html.AntiForgeryToken()
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
             </div>
-            <div class="form-group">
-                <label for="">Direccion</label>
-                @Html.TextAreaFor(p => p.Direcction, new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.Direcction)
-                @Html.AntiForgeryToken()
-            </div>
-            <button type="submit" class="btn btn-primary">Guardar</button>
-        </div>
-        @Html.HiddenFor(p => p.ProviderId)
+        @Html.HiddenFor(p => p.Provider.PersonId)
     </div>
 }
 

@@ -18,11 +18,12 @@ namespace DgrosStore.Controllers
         // GET: Sales
         public ActionResult Index()
         {
+            bool state = true;
             var Sales = new SalesViewModel()
             {
                 paymentMethod = new PaymentMethod(),
-                products = dgrosStore.Products.ToList(),
-                clients = dgrosStore.Clients.ToList(),
+                products = dgrosStore.Products.Where(p => p.State == state).ToList(),
+                clients = dgrosStore.Clients.Where(p => p.State == state).ToList(),
             };
             return View("SalesIndex",Sales);
         }

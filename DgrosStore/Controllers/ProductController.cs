@@ -149,7 +149,8 @@ namespace DgrosStore.Controllers
         [Route("Create/Product")]
         public ActionResult Create()
         {
-            var categories = dgrosStore.Categories.ToList();
+            bool state = true;
+            var categories = dgrosStore.Categories.Where(c => c.State == state).ToList();
             var stores = dgrosStore.Stores.ToList();
             var product = new ProductViewModel()
             {
@@ -194,7 +195,6 @@ namespace DgrosStore.Controllers
                     }
                     else
                         productView.Product.Image = url + "prueba.jpg";
-
                     dgrosStore.Products.Add(productView.Product);
                 }
                 catch(Exception ex)

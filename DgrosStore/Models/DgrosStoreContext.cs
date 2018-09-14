@@ -12,6 +12,7 @@ namespace DgrosStore.Models
             :base("name=DgrosStoreConection")
         {   }
 
+        public DbSet<Person> People { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Product> Products { get; set; }
@@ -24,6 +25,7 @@ namespace DgrosStore.Models
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
 
+            modelBuilder.Configurations.Add(new PersonConfiguration());
             modelBuilder.Configurations.Add(new CategoryConfiguration());
             modelBuilder.Configurations.Add(new ClientConfiguration());
             modelBuilder.Configurations.Add(new ProductConfiguration());

@@ -5,39 +5,147 @@
 }
 
 <div class="row">
-    <div class="col-sm-12 col-lg-12 card card-body">
+    <div class="card col-sm-12 col-lg-4 p-4">
+        <img height="300" width="300" class="card-img-top rounded my-2 border-right-0" src="@(Model.Image == null ? @"\Content\Images\client.png" : Model.Image)" alt="Card image">
+        <div class="card-body border-right-0">
+            <h5 class="card-title">@Model.Name </h5>
+            <div class="card-text">
+                <h6>Cedula:  @Model.Rnc</h6>
+            </div>
+            <div class="card-text">
+                <h6>Telefono: @(Model.Telephones.FirstOrDefault(t => t.Number.Length > 0) == null ? "..." : Model.Telephones.FirstOrDefault().Number)</h6>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-sm-12 col-lg-8 card card-body border-left-0">
+        <div class="row">
+            <h2 class="col col-lg-6">Informacion Adicional</h2>
+            <div class="col col-lg-6 d-flex justify-content-end">
+                @Html.ActionLink(" ", "Edit", "Provider", new { id = Model.PersonId }, new { @class = "btn btn-warning btn-xs fa fa-edit pt-2 mr-2" })
+                <button type="button" data-id="@Model.PersonId" class="btn btn-danger btn-xs fa fa-remove js-remove"></button>
+            </div>
+        </div>
+        <br />
+        <h5>Correo electronico</h5>
+        <span>@Model.Email</span><br />
+        <h5>Direccion</h5>
+        <span>@(String.IsNullOrWhiteSpace(Model.Direcction) ? "no hay direccion" : Model.Direcction)</span><br />
+
         <div class="row">
             <div class="col-lg-4">
-                <h2>@Model.Name</h2>
-                <h5>Correo electronico</h5>
-                <span>@Model.Email</span><br />
-                <h5>Telefono</h5>
-                <span>@Model.Telephone</span>
-                <h5>Direccion</h5>
-                <span>@(String.IsNullOrWhiteSpace(Model.Direcction) ? "no hay direccion" : Model.Direcction)</span><br />
-            </div>
-            <div class="col-lg-7">
-                <h5>Compras</h5>
-                @if (Model.Shoppings == null || Model.Shoppings.Count() == 0)
+                <h5>Telefonos @Html.ActionLink(" ", "Create", "Telephone", new { id = Model.PersonId }, new { @class = "btn btn-success btn-sm fa fa-plus 2x my-1" })</h5>
+                @if (Model.Telephones.Count() == 0)
                 {
-                    <span>No se han Comprado articulos a este Proveedor</span>
+                    <span>No hay telefonos</span>
+                }
+                else
+                {
+                    int counter = 1;
+                    foreach (var telephone in Model.Telephones)
+                    {
+
+                        <span>
+                            <strong>@counter</strong> - @telephone.Number @Html.ActionLink(" ", "Edit", "Telephone", new { id = telephone.TelephoneId }, new { @class = "btn btn-warning btn-sm fa fa-edit 2x my-1" })
+                            <button type="button" data-id="@telephone.TelephoneId" class="btn btn-danger btn-sm fa fa-times 2x my-1 js-removeTel"></button>
+                        </span><br />
+                        counter++;
+                    }
+
+                }
+                <br />
+            </div>
+            <div class="col-lg-8">
+                <h5>Compras</h5>
+                @if (Model.Shoppings.Count() == 0)
+                {
+                    <span>No se han comprado articulos a este proveedor</span>
                 }
                 else
                 {
                     int counter = 1;
                     foreach (var shopping in Model.Shoppings)
                     {
-                        <span>@counter - @shopping.Date</span>
+                        <span>@counter - @shopping.Date</span><br />
                         counter++;
                     }
 
                 }
             </div>
-            <div class="col-lg-1  d-flex justify-content-lg-start p-0 " style="height:38px">
-                @Html.ActionLink(" ", "Index", "Provider", null, new { @class = "btn btn-info fa fa-times" })
-            </div>
         </div>
-        
     </div>
-    
+    <div class="col-sm-12 col-lg-4  d-flex justify-content-lg-start p-0">
+        @Html.ActionLink(" ", "Index", "Provider", null, new { @class = "btn btn-info btn-block my-2 fa fa-long-arrow-left" })
+    </div>
 </div>
+
+
+
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+
+
+            var button = $(".js-remove");
+            var telButton = $(".js-removeTel");
+
+            button.on("click",function () {
+                var button = $(this);
+                bootbox.confirm("Estas seguro de que deseas eliminar este Proveedor", function (result) {
+                    if (result) {
+                        $.ajax({
+                            type: "POST",
+                            url: `/Provider/Delete/${button.attr("data-id")}`,
+                            success: function (data) {
+                                if (parseInt(data) == 1) {
+                                    bootbox.alert("Se ha borrado el Proveedor", function ()
+                                    {
+                                        window.location.href = "/Provider";
+                                    });
+
+                                } else {
+                                    bootbox.alert("No Se ha borrado el Proveedor, error interno:<br>"+data);
+                                }
+                            },
+                            error: function (response) {
+                                bootbox.alert(response.responseText);
+                            }
+                        });
+                    }
+                });
+
+            });
+
+            telButton.on("click", function () {
+                var button = $(this);
+                bootbox.confirm("Estas seguro de que deseas eliminar este numero de telefono", function (result) {
+                    if (result) {
+                        $.ajax({
+                            type: "POST",
+                            url: `/Telephone/Delete/${button.attr("data-id")}`,
+                            success: function (data) {
+                                if (parseInt(data) == 1) {
+                                    bootbox.alert("Se ha borrado el Telefono del proveedor", function () {
+                                        window.location.reload();
+                                    });
+
+                                } else {
+                                    bootbox.alert("No Se ha borrado el numero del proveedor, error interno:<br>" + data);
+                                }
+                            },
+                            error: function (response) {
+                                bootbox.alert(response.responseText);
+                            }
+                        });
+                    }
+                });
+
+            });
+
+        });
+    </script>
+
+}

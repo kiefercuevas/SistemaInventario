@@ -21,7 +21,7 @@ namespace DgrosStore.Models.customValidation
             var clientInDb = dgrosStore.Clients
                                     .Join(dgrosStore.Telephones,
                                           c => c.ClientId,
-                                          t => t.ClientId,
+                                          t => t.PersonId,
                                           (c, t) => new { Client = c, Telephone = t })
                                     .Where(c => c.Telephone.Number == clientTelephone)
                                     .SingleOrDefault();
@@ -30,9 +30,9 @@ namespace DgrosStore.Models.customValidation
 
             if (clientInDb != null && clientInDb.Client.ClientId != client.Client.ClientId)
                 return new ValidationResult("Ya existe un cliente con ese numero telefonico");
-            else
+            /*else
             {
-                var providerInDb = dgrosStore.Providers.SingleOrDefault(p => p.Telephone == clientTelephone);
+                var providerInDb = dgrosStore.Providers.SingleOrDefault(p => p. == clientTelephone);
                 if(providerInDb != null)
                     return new ValidationResult("El numero introducido pertenece a un proveedor registrado");
                 else
@@ -41,7 +41,7 @@ namespace DgrosStore.Models.customValidation
                     if(storeInDb != null)
                         return new ValidationResult("El numero introducido pertenece a una de las sucursales de la empresa");
                 }
-            }
+            }*/
             return ValidationResult.Success;
         }
     }

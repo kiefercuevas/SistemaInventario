@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data.Entity.ModelConfiguration;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DgrosStore.Models.EntitiesConfiguration
 {
@@ -15,13 +16,13 @@ namespace DgrosStore.Models.EntitiesConfiguration
             ToTable("Clients");
             HasKey(c => c.ClientId);
 
-            Property(c => c.Name)
-                .HasMaxLength(20)
-                .IsRequired();
 
             Property(c => c.LastName)
                 .HasMaxLength(30)
                 .IsRequired();
+
+            Property(c => c.ClientId)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
         }
     }

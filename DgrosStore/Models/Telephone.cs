@@ -11,7 +11,7 @@ namespace DgrosStore.Models
 
 
         //propiedades navegacion de cliente
-        public Client Client { get; set; }
-        public int ClientId { get; set; }
+        public Person Person { get; set; }
+        public int PersonId { get; set; }
     }
 }

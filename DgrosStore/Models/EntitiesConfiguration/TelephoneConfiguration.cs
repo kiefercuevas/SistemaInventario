@@ -14,9 +14,9 @@ namespace DgrosStore.Models.EntitiesConfiguration
             HasKey(t => t.TelephoneId);
 
 
-            HasRequired(c => c.Client)
+            HasRequired(c => c.Person)
             .WithMany(t => t.Telephones)
-            .HasForeignKey(c => c.ClientId);
+            .HasForeignKey(c => c.PersonId);
             
         }
     }

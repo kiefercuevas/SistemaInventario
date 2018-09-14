@@ -24,7 +24,7 @@ namespace DgrosStore.Models.customValidation
 
             if (clientInDb != null)
             {
-                if(clientInDb.ClientId != client.ClientId)
+                if(clientInDb.PersonId != client.PersonId)
                 {
                     return new ValidationResult("Ya existe un cliente con esta cedula");
                 }

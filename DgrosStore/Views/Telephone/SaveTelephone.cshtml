@@ -7,7 +7,15 @@
 <div class="row">
     <h2>@(Model.TelephoneId == 0 ? "Telefono" : "Editar Telefono")</h2>
     <div class="col-lg-4 d-flex justify-content-lg-end">
-        @Html.ActionLink(" ", "ClientDetails", "Client", new { id = Model.ClientId }, new { @class = "btn btn-info my-2 fa fa-times" })
+        @if (Model.Person.Type == "client")
+        {
+            @Html.ActionLink(" ", "ClientDetails", "Client", new { id = Model.PersonId }, new { @class = "btn btn-info my-2 fa fa-times" })
+        }
+        else
+        {
+            @Html.ActionLink(" ", "ProviderDetails", "Provider", new { id = Model.PersonId }, new { @class = "btn btn-info my-2 fa fa-times" })
+        }
+
     </div>
 </div>
 
@@ -18,7 +26,7 @@
         @Html.TextBoxFor(t => t.Number, new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.Number)
     </div>
-    @Html.HiddenFor(t => t.ClientId)
+    @Html.HiddenFor(t => t.PersonId)
     @Html.HiddenFor(t => t.TelephoneId)
     @Html.AntiForgeryToken()
     <button class="btn btn-primary">Guardar</button>
