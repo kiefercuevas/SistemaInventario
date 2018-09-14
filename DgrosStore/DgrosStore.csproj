@@ -250,6 +250,8 @@
     <Compile Include="Models\customValidation\ClientTelephoneValidation.cs" />
     <Compile Include="Models\customValidation\IdCardValidation.cs" />
     <Compile Include="Models\customValidation\ProductNameValidation.cs" />
+    <Compile Include="Models\customValidation\ProviderEmailValidation.cs" />
+    <Compile Include="Models\customValidation\ProviderTelephoneValidation.cs" />
     <Compile Include="Models\customValidation\SellingPriceValidation.cs" />
     <Compile Include="Models\customValidation\ShoppingPriceValidation.cs" />
     <Compile Include="Models\DgrosStoreContext.cs" />

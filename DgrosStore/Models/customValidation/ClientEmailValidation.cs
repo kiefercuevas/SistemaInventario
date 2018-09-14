@@ -31,7 +31,13 @@ namespace DgrosStore.Models.customValidation
 
             if (clientInDb != null && clientInDb.ClientId != client.ClientId)
                 return new ValidationResult("Ya existe un cliente con este Correo");
+            else
+            {
+                var provider = dgrosStore.Providers.SingleOrDefault(p => p.Email.ToLower() == clientEmail.ToLower());
 
+                if(provider != null)
+                    return new ValidationResult("El Correo introducido pertenece a un proveedor");
+            }
 
         return ValidationResult.Success;
     }

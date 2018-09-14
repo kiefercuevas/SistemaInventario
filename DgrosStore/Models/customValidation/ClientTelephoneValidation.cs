@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.ComponentModel.DataAnnotations;
-using DgrosStore.Models;
 using DgrosStore.Models.viewModels;
-using System.Data.Entity;
 
 namespace DgrosStore.Models.customValidation
 {
@@ -31,10 +26,22 @@ namespace DgrosStore.Models.customValidation
                                     .Where(c => c.Telephone.Number == clientTelephone)
                                     .SingleOrDefault();
 
+            
 
             if (clientInDb != null && clientInDb.Client.ClientId != client.Client.ClientId)
                 return new ValidationResult("Ya existe un cliente con ese numero telefonico");
-
+            else
+            {
+                var providerInDb = dgrosStore.Providers.SingleOrDefault(p => p.Telephone == clientTelephone);
+                if(providerInDb != null)
+                    return new ValidationResult("El numero introducido pertenece a un proveedor registrado");
+                else
+                {
+                    var storeInDb = dgrosStore.Stores.SingleOrDefault(s => s.Telephone == clientTelephone);
+                    if(storeInDb != null)
+                        return new ValidationResult("El numero introducido pertenece a una de las sucursales de la empresa");
+                }
+            }
             return ValidationResult.Success;
         }
     }

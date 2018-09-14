@@ -20,6 +20,7 @@
                         selectClient.html("<option value>No existen registros que coincidan</option>");
                     } else {
                         selectClient.html("");
+                        selectClient.append(`<option value="">Seleccione un cliente</option>`);
                         $(data).each(function (index, item) {
                             selectClient.append(`<option value="${item.ClientId}">${item.Name + " " + item.LastName}</option>`);
                         });
@@ -43,6 +44,7 @@
                         selectProduct.html("<option value>No existen productos con ese nombre</option>");
                     } else {
                         selectProduct.html("");
+                        selectProduct.append(`<option value="">Seleccione un producto</option>`);
                         $(data).each(function (index, item) {
                             selectProduct.append(`<option value="${item.ProductId}">${item.Name}</option>`);
                         });

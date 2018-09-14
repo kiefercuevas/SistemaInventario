@@ -84,8 +84,6 @@ namespace DgrosStore.Controllers
         [Route("Sales/GetProduct")]
         public ActionResult GetProduct(int id)
         {
-            //var jsonSerialiser = new JavaScriptSerializer();
-
             var product = dgrosStore.Products
                         .Select(p => new
                           {
@@ -97,8 +95,6 @@ namespace DgrosStore.Controllers
                         .SingleOrDefault(p => p.id == id);
             if (product == null)
                 return HttpNotFound();
-
-            //var jsonProduct = jsonSerialiser.Serialize(product);
 
             return Json(product, JsonRequestBehavior.AllowGet);
         }
@@ -130,7 +126,7 @@ namespace DgrosStore.Controllers
             }
         }
 
-       
+       //aqui hay que pasar el dato de la tienda donde se realizo la venta
         private Sales CreateSales(SaveSalesViewModel salesViewModel,Client client)
         {
             Sales sales;
