@@ -5,7 +5,7 @@ using System.Web;
 
 namespace DgrosStore.Models.viewModels
 {
-    public class GetClientModelSalesView
+    public class ClientModelForSalesViewDTO
     {
         public int ClientId { get; set; }
         public string Name { get; set; }

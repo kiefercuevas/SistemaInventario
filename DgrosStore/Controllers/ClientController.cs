@@ -125,8 +125,8 @@ namespace DgrosStore.Controllers
                     if (clientView.UploadedFile != null)
                     {
                         Image data = UploadMethod(clientView, url);
-                        clientView.Client.Image = data.ImagePath;
-                        clientView.UploadedFile.SaveAs(data.CompletePath);
+                        clientView.Client.Image = data.RelativePath;
+                        clientView.UploadedFile.SaveAs(data.AbsolutePath);
                     }
                     else
                         clientView.Client.Image = url + "client.png";
@@ -175,10 +175,10 @@ namespace DgrosStore.Controllers
                     try
                     {
                         Image data = UploadMethod(clientView, url);
-                        if (data.ImagePath != clientInDb.Image)
+                        if (data.RelativePath != clientInDb.Image)
                         {
-                            clientInDb.Image = data.ImagePath;
-                            clientView.UploadedFile.SaveAs(data.CompletePath);
+                            clientInDb.Image = data.RelativePath;
+                            clientView.UploadedFile.SaveAs(data.AbsolutePath);
                         }
                     }
                     catch (Exception ex)
@@ -275,9 +275,9 @@ namespace DgrosStore.Controllers
             return new Image()
             {
                 //imagePath es la ruta relativa
-                ImagePath = url + filename,
+                RelativePath = url + filename,
                 //ruta absoluta
-                CompletePath = path
+                AbsolutePath = path
             };
         }
 

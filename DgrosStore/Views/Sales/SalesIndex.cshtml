@@ -30,7 +30,7 @@
                         <button type="button" id="searchClient" class="input-group-text"><i id="searchClientIcon" class="fa fa-search"></i></button>
                     </div>
                     <input type="text" id="clientInput">
-                    @Html.DropDownListFor(m => m.clients, new SelectList(Model.clients, "ClientId", "Name"), "seleccione un cliente",
+                    @Html.DropDownListFor(m => m.Clients, new SelectList(Model.Clients, "ClientId", "Name"), "seleccione un cliente",
                            new { @class = "form-control", @id = "clientSelect" })
                 </div>
             </div>
@@ -42,9 +42,9 @@
                         <button type="button" id="searchProduct" class="input-group-text"><i id="searchProductIcon" class="fa fa-search"></i></button>
                     </div>
                     <input type="text" id="productInput">
-                    @Html.DropDownListFor(m => m.products, new SelectList(Model.products, "ProductId", "Name"),"seleccione un producto",
+                    @Html.DropDownListFor(m => m.Products, new SelectList(Model.Products, "ProductId", "Name"),"seleccione un producto",
                            new { @class = "form-control", @id = "productSelect" })
-                    @Html.ValidationMessageFor(m => m.products)
+                    @Html.ValidationMessageFor(m => m.Products)
                 </div>
             </div>
 
@@ -54,12 +54,18 @@
             </div>
             <div class="form-group">
                 <label><strong>Metodo de pago</strong></label>
-                @Html.EnumDropDownListFor(m => m.paymentMethod, "selecciona un metodo de pago", new { @class = "form-control", @id = "paymentMethod", @name = "paymentMethod" })
-                @Html.ValidationMessageFor(m => m.paymentMethod)
+                @Html.EnumDropDownListFor(m => m.PaymentMethod, "selecciona un metodo de pago", new { @class = "form-control", @id = "paymentMethod", @name = "paymentMethod" })
+                @Html.ValidationMessageFor(m => m.PaymentMethod)
+            </div>
+            <div class="form-group">
+                <label><strong>Tipo de descuento</strong></label>
+                @Html.DropDownListFor(m => m.Discounts, new SelectList(Model.Discounts, "DiscountId", "DiscountName"),"seleccione un tipo de descuento",
+                          new { @class = "form-control", @id = "discountSelect", @name = "discountSelect" })
+                @Html.ValidationMessageFor(m => m.Discounts)
             </div>
             <div class="form-group">
                 <label><strong>Comentario</strong></label>
-                @Html.TextAreaFor(m => m.commentary, 4, 50, new { @class = "form-control", @id = "commentary", @name = "commentary" })
+                @Html.TextAreaFor(m => m.commentary, 4, 50, new { @class = "form-control", @id = "commentary", @name = "commentary"})
             </div>
             <div class="form-group">
                 <button id="salesButton" type="button" class="btn btn-primary btnSize">Finalizar venta</button>

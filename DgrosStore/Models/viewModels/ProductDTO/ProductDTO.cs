@@ -5,7 +5,7 @@ using System.Web;
 
 namespace DgrosStore.Models.viewModels
 {
-    public class GetProductModel
+    public class ProductDTO
     {
         public int ProductId { get; set; }
         public string Name { get; set; }

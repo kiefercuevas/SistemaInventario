@@ -11,5 +11,8 @@ namespace DgrosStore.Models
         public string Rnc { get; set; }
         //collecion de compras a Proveedores
         public ICollection<Shopping> Shoppings { get; set; }
+
+        //colleccion de productos
+        public ICollection<Product> Products { get; set; }
     }
 }

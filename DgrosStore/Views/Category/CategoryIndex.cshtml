@@ -17,9 +17,9 @@
 @section scripts
 {
     <script>
-        var CategoryTable = $("#CategoryTable");
+        var DiscountTable = $("#CategoryTable");
         $(document).ready(function () {
-            var datatable = CategoryTable.DataTable(
+            var datatable = DiscountTable.DataTable(
                 {
                     ajax: {
                         url: "Category/GetCategories",
@@ -75,7 +75,7 @@
             }).draw();
 
 
-            CategoryTable.on("click", ".js-remove", function () {
+            DiscountTable.on("click", ".js-remove", function () {
                 var button = $(this);
                 bootbox.confirm("Estas seguro de que deseas eliminar esta categoria , se eliminaran todos los productos asociados a esta", function (result) {
                     if (result) {

@@ -7,7 +7,7 @@ namespace DgrosStore.Models.viewModels
 {
     public class Image
     {
-        public string ImagePath{ get; set; }
-        public string CompletePath { get; set; }
+        public string RelativePath{ get; set; }
+        public string AbsolutePath { get; set; }
     }
 }

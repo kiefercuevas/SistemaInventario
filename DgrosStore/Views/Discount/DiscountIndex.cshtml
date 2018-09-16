@@ -1,12 +1,12 @@
-﻿
-<h2 class="text-center">Productos</h2>
-<table id="ProductsTable" class="table table-hover table-responsive-md table-bordered">
+﻿<h2 class="text-center"> Descuentos</h2>
+<br />
+<table id="DiscountTable" class="table table-hover table-responsive-md table-bordered ">
     <thead class="thead-dark">
         <tr>
+            <th scope="col">#</th>
             <th scope="col">Nombre</th>
-            <th scope="col">Precio Compra</th>
-            <th scope="col">Precio Venta</th>
-            <th scope="col">Cantidad</th>
+            <th scope="col">Tipo de descuento</th>
+            <th scope="col">valor</th>
             <th scope="col">Acciones</th>
         </tr>
     </thead>
@@ -17,50 +17,41 @@
 @section scripts
 {
     <script>
-        var ProductsTable = $("#ProductsTable");
+        var DiscountTable = $("#DiscountTable");
         $(document).ready(function () {
-
-            var datatable = ProductsTable.DataTable(
+            var datatable = DiscountTable.DataTable(
                 {
-                    serverSide: true,
-                    processing: true,
                     ajax: {
-                        url: `/Product/GetProductByCategory`,
-                        data: { category: "@ViewData["category"]" },
-                        dataSrc: "data"
+                        url: "Discount/GetDiscount",
+                        dataSrc: ""
                     },
                     columns: [
                         {
-                            data: "Name",
-                            render: function (data, type, product) {
-                                return `<a href="/Product/details/${product.ProductId}" style="color:black">${product.Name}</a>`
-                            }
+                            defaultContent: "#"
                         },
                         {
-                            data: "ShoppingPrice"
+                            data: "DiscountName",
                         },
                         {
-                            data: "SellingPrice"
+                            data: "DiscountType",
                         },
                         {
-                            data: "Stock"
+                            data: "Discountvalue",
                         },
                         {
-                            data: "ProductId",
+                            data: "DiscountId",
                             render: function (data) {
-                                return `<a class="btn btn-warning btn-xs fa fa-edit" href="/Edit/Product/${data}"></a>
-                                        <button type="button" data-id="${data}" class="btn btn-danger btn-xs fa fa-remove js-remove"></button>
-                                               `
+                                return `<a class="btn btn-warning btn-xs fa fa-edit" href="/Edit/Discount/${data}"></a>
+                                            <button type="button" data-id="${data}" class="btn btn-danger btn-xs fa fa-remove js-remove"></button>
+                                                   `
                             }
                         }
                     ],
-                    "columnDefs": [
-                        { "searchable": false, "orderable": false, "targets": 4 },
-                        { "name": "Name", "targets": 0 },
-                        { "name": "ShoppingPrice", "targets": 1 },
-                        { "name": "SellingPrice", "targets": 2 },
-                        { "name": "Stock", "targets": 3 }
-                    ],
+                    "columnDefs": [{
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0
+                    }],
                     "order": [[1, 'asc']],
                     "autoWidth": false,
                     "language": {
@@ -80,23 +71,29 @@
                     "lengthMenu": [5, 10, 25, 50, 75, 100]
                 });
 
+            datatable.on('order.dt search.dt', function () {
+                datatable.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
 
 
-            ProductsTable.on("click", ".js-remove", function () {
+            DiscountTable.on("click", ".js-remove", function () {
                 var button = $(this);
-                bootbox.confirm("Estas seguro de que deseas eliminar este producto", function (result) {
+                bootbox.confirm("Estas seguro de que deseas eliminar este Descuento?", function (result) {
                     if (result) {
                         $.ajax({
                             type: "POST",
-                            url: `/Product/Delete/${button.attr("data-id")}`,
+                            url: `Discount/Delete/${button.attr("data-id")}`,
                             success: function (data) {
                                 if (parseInt(data) == 1) {
+                                    console.log(data);
                                     datatable.row(button.parents("tr"))
                                         .remove()
                                         .draw();
-                                    bootbox.alert("Se ha borrado el producto");
+                                    bootbox.alert("Se ha borrado El descuento");
                                 } else {
-                                    bootbox.alert("No Se ha borrado el producto, error interno");
+                                    bootbox.alert("No Se ha borrado el Descuento, error interno");
                                 }
                             },
                             error: function (response) {
@@ -104,7 +101,7 @@
                             }
                         });
                     }
-                });
+                })
 
             });
         });

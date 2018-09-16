@@ -62,10 +62,18 @@ namespace DgrosStore.Models
         [Required(ErrorMessage = "Debe de elegir una tienda")]
         public int StoreId { get; set; }
 
+        public Provider Provider { get; set; }
+
+        [Required(ErrorMessage = "Debe de elegir un Proveedor")]
+        public int ProviderId { get; set; }
+
         //colleccion de ventas
         public virtual ICollection<SalesProducs> SalesProducs { get; set; }
 
         //colleccion de compras
         public virtual ICollection<ShoppingProducts> ShoppingProducts { get; set; }
+
+        //colleccion de descuentos
+        public virtual ICollection<Discount> Discounts { get; set; }
     }
 }

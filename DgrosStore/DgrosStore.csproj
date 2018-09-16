@@ -158,6 +158,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\ClientController.cs" />
+    <Compile Include="Controllers\DiscountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
@@ -258,6 +259,30 @@
     <Compile Include="Migrations\201809141734532_providerModificationProviderIdColumnAndRNCcolum.Designer.cs">
       <DependentUpon>201809141734532_providerModificationProviderIdColumnAndRNCcolum.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809161301499_addUnitPriceAndSubTotalColumnsToSalesProductTable.cs" />
+    <Compile Include="Migrations\201809161301499_addUnitPriceAndSubTotalColumnsToSalesProductTable.Designer.cs">
+      <DependentUpon>201809161301499_addUnitPriceAndSubTotalColumnsToSalesProductTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809161306301_addProviderIDColumnToProductTable.cs" />
+    <Compile Include="Migrations\201809161306301_addProviderIDColumnToProductTable.Designer.cs">
+      <DependentUpon>201809161306301_addProviderIDColumnToProductTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809161623341_addDiscountTableAndManyToManyRelationToProductAndDiscountAndSalesAndDiscount.cs" />
+    <Compile Include="Migrations\201809161623341_addDiscountTableAndManyToManyRelationToProductAndDiscountAndSalesAndDiscount.Designer.cs">
+      <DependentUpon>201809161623341_addDiscountTableAndManyToManyRelationToProductAndDiscountAndSalesAndDiscount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809161947564_addTotalColumnToSalesTable.cs" />
+    <Compile Include="Migrations\201809161947564_addTotalColumnToSalesTable.Designer.cs">
+      <DependentUpon>201809161947564_addTotalColumnToSalesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809161950113_changeTotalColumnTypeInSalesTable.cs" />
+    <Compile Include="Migrations\201809161950113_changeTotalColumnTypeInSalesTable.Designer.cs">
+      <DependentUpon>201809161950113_changeTotalColumnTypeInSalesTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809162137529_addValidationToDiscountTable.cs" />
+    <Compile Include="Migrations\201809162137529_addValidationToDiscountTable.Designer.cs">
+      <DependentUpon>201809162137529_addValidationToDiscountTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Client.cs" />
@@ -270,6 +295,7 @@
     <Compile Include="Models\customValidation\SellingPriceValidation.cs" />
     <Compile Include="Models\customValidation\ShoppingPriceValidation.cs" />
     <Compile Include="Models\DgrosStoreContext.cs" />
+    <Compile Include="Models\Discount.cs" />
     <Compile Include="Models\EntitiesConfiguration\CategoryConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\ClientConfiguration.cs" />
     <Compile Include="Models\EntitiesConfiguration\PersonConfiguration.cs" />
@@ -292,20 +318,20 @@
     <Compile Include="Models\Store.cs" />
     <Compile Include="Models\Telephone.cs" />
     <Compile Include="Models\Transaction.cs" />
-    <Compile Include="Models\viewModels\CategoryModel.cs" />
-    <Compile Include="Models\viewModels\ClientViewModel.cs" />
+    <Compile Include="Models\viewModels\CategoryDTO\CategoryModel.cs" />
+    <Compile Include="Models\viewModels\ClientDTO\ClientViewModel.cs" />
     <Compile Include="Models\viewModels\DataTable.cs" />
-    <Compile Include="Models\viewModels\GetClientModel.cs" />
-    <Compile Include="Models\viewModels\GetClientModelSalesView.cs" />
-    <Compile Include="Models\viewModels\GetProductModel.cs" />
-    <Compile Include="Models\viewModels\GetProductView.cs" />
-    <Compile Include="Models\viewModels\GetProvidersModel.cs" />
+    <Compile Include="Models\viewModels\ClientDTO\GetClientModel.cs" />
+    <Compile Include="Models\viewModels\ClientDTO\ClientModelForSalesViewDTO.cs" />
+    <Compile Include="Models\viewModels\DiscountDTO\DiscountModelDTO.cs" />
+    <Compile Include="Models\viewModels\ProductDTO\ProductDTO.cs" />
+    <Compile Include="Models\viewModels\ProductDTO\ProductModelForSalesViewDTO.cs" />
+    <Compile Include="Models\viewModels\ProviderDTO\GetProvidersModel.cs" />
     <Compile Include="Models\viewModels\Image.cs" />
-    <Compile Include="Models\viewModels\ProductJsonModel.cs" />
-    <Compile Include="Models\viewModels\ProductViewModel.cs" />
-    <Compile Include="Models\viewModels\ProviderViewModel.cs" />
-    <Compile Include="Models\viewModels\SalesViewModel.cs" />
-    <Compile Include="Models\viewModels\SaveSalesViewModel.cs" />
+    <Compile Include="Models\viewModels\ProductDTO\ProductViewModel.cs" />
+    <Compile Include="Models\viewModels\ProviderDTO\ProviderViewModel.cs" />
+    <Compile Include="Models\viewModels\SalesDTO\SalesViewModel.cs" />
+    <Compile Include="Models\viewModels\SalesDTO\SaveSalesViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -651,6 +677,8 @@
     <Content Include="Views\Provider\SaveProvider.cshtml" />
     <Content Include="Views\Provider\ProviderDetails.cshtml" />
     <Content Include="Views\Sales\SalesIndex.cshtml" />
+    <Content Include="Views\Discount\DiscountIndex.cshtml" />
+    <Content Include="Views\Discount\SaveDiscount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -728,6 +756,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809141734532_providerModificationProviderIdColumnAndRNCcolum.resx">
       <DependentUpon>201809141734532_providerModificationProviderIdColumnAndRNCcolum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809161301499_addUnitPriceAndSubTotalColumnsToSalesProductTable.resx">
+      <DependentUpon>201809161301499_addUnitPriceAndSubTotalColumnsToSalesProductTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809161306301_addProviderIDColumnToProductTable.resx">
+      <DependentUpon>201809161306301_addProviderIDColumnToProductTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809161623341_addDiscountTableAndManyToManyRelationToProductAndDiscountAndSalesAndDiscount.resx">
+      <DependentUpon>201809161623341_addDiscountTableAndManyToManyRelationToProductAndDiscountAndSalesAndDiscount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809161947564_addTotalColumnToSalesTable.resx">
+      <DependentUpon>201809161947564_addTotalColumnToSalesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809161950113_changeTotalColumnTypeInSalesTable.resx">
+      <DependentUpon>201809161950113_changeTotalColumnTypeInSalesTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809162137529_addValidationToDiscountTable.resx">
+      <DependentUpon>201809162137529_addValidationToDiscountTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

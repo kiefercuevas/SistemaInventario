@@ -21,7 +21,8 @@ namespace DgrosStore.Models
         public DbSet<Shopping> Shoppings { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<Telephone> Telephones { get; set; }
-
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<SalesProducs> SalesProducs { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
 

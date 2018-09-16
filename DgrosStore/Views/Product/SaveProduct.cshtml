@@ -20,6 +20,11 @@
                 @Html.ValidationMessageFor(m => m.Product.Name)
             </div>
             <div class="form-group">
+                <label for="Category"><strong>Categoria</strong></label>
+                @Html.DropDownListFor(c => c.Product.CategoryId, new SelectList(Model.Categories, "CategoryId", "Name"), "Elige una categoria", new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Product.CategoryId)
+            </div>
+            <div class="form-group">
                 <label for="ShoppingPrice"><strong>Precio de compra</strong></label>
                 @Html.TextBoxFor(p => p.Product.ShoppingPrice, new { @class = "form-control" })
                 @Html.ValidationMessageFor(m => m.Product.ShoppingPrice)
@@ -35,9 +40,9 @@
                 @Html.ValidationMessageFor(m => m.Product.Stock)
             </div>
             <div class="form-group">
-                <label for="Category"><strong>Categoria</strong></label>
-                @Html.DropDownListFor(c => c.Product.CategoryId, new SelectList(Model.Categories, "CategoryId", "Name"), "Elige una categoria", new { @class = "form-control" })
-                @Html.ValidationMessageFor(m => m.Product.CategoryId)
+                <label for="Provider"><strong>Proveedor</strong></label>
+                @Html.DropDownListFor(c => c.Product.ProviderId, new SelectList(Model.Providers, "ProviderId", "Name"), "Elige un proveedor", new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Product.ProviderId)
             </div>
             <div class="form-group">
                 <label for="Store"><strong>Tienda</strong></label>

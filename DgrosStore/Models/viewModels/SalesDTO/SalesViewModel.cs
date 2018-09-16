@@ -9,10 +9,12 @@ namespace DgrosStore.Models.viewModels
     {
 
         [Required(ErrorMessage = "Debe de elegir un metodo de pago")]
-        public PaymentMethod paymentMethod;
-        public IEnumerable<Client> clients;
+        public PaymentMethod PaymentMethod;
+        public IEnumerable<Client> Clients;
         [Required(ErrorMessage = "Debe de elegir al menos un producto")]
-        public IEnumerable<Product> products;
+        public IEnumerable<Product> Products;
+
+        public IEnumerable<Discount> Discounts;
         public string commentary;
     }
 }

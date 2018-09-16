@@ -8,13 +8,14 @@
     
     $("#clientInput").keyup(function () {
         var client = $("#clientInput").val();
+        var selectClient = $("#clientSelect");
+
         if (client.length >= 3 || client.length == 0)
         {  
-            var selectClient = $("#clientSelect");
             $.ajax({
                 type: "GET",
                 url: "Sales/GetClients",
-                data: { client: client },
+                data: { param: client },
                 success: function (data) {
                     if (data.length === 0 && client.length > 0) {
                         selectClient.html("<option value>No existen registros que coincidan</option>");
@@ -32,13 +33,14 @@
 
     $("#productInput").keyup(function () {
         var product = $("#productInput").val();
+        var selectProduct = $("#productSelect");
 
         if (product.length >= 3 || product.length == 0) {
-            var selectProduct = $("#productSelect");
+            
             $.ajax({
                 type: "GET",
                 url: "Sales/GetProducts",
-                data: { product: product },
+                data: { param: product },
                 success: function (data) {
                     if (data.length === 0 && product.length > 0) {
                         selectProduct.html("<option value>No existen productos con ese nombre</option>");
@@ -49,7 +51,6 @@
                             selectProduct.append(`<option value="${item.ProductId}">${item.Name}</option>`);
                         });
                     }
-
                 }
             });
         }
@@ -70,21 +71,25 @@
                     data: { id: selectedProduct },
                     success: function (data) {
 
-                        //append table element
-                        CreateTableElement(data);
+                        if (data !== "0") {
+                            //append table element
+                            CreateTableElement(data);
 
-                        //price
-                        UpdatePrice();
+                            //price
+                            UpdatePrice();
 
-                        //productos
-                        CreateProductArray();
+                            //productos
+                            CreateProductArray();
 
-                        //quantity
-                        EventAsingToQuantityAndDiscount(data);
+                            //quantity
+                            AsingEventsToQuantityAndDiscount(data);
 
 
-                        //delete button
-                        CreateDeleteButtonArray(data);
+                            //delete button
+                            CreateDeleteButtonArray(data);
+                        } else {
+                            bootbox.alert("El producto no existe");
+                        }
                     }
                 });
             } else {
@@ -115,14 +120,15 @@
     //crear elemento de tr de la tabla
     function CreateTableElement(data) {
 
+        
         $("#tableProduct").append(
             `<tr>
-                        <td style="display:none"><input type="hidden" value="${data.id}" readonly></td>
-                        <td><strong>${data.name}</strong></td>
-                        <td><input type="number" name="quantity" min="1" max="${data.stock}" value="1"></td>
+                        <td style="display:none"><input type="hidden" value="${data.ProductId}" readonly></td>
+                        <td><strong name="product">${data.Name}</strong></td>
+                        <td><input type="number" name="quantity" min="1" max="${data.Stock}" value="1"></td>
                         <td><input type="number" name="discount" min="0" max="100" value="0"></td>
-                        <td><strong name="price">${data.price}</strong></td>
-                        <td><strong name="subTotal">${data.price}</strong></td>
+                        <td><strong name="price">${data.SellingPrice.toFixed(2)}</strong></td>
+                        <td><strong name="subTotal">${data.SellingPrice.toFixed(2)}</strong></td>
                         <td><button type="button" class="btn btn-danger btn-sm"><span class="fa fa-remove"></span></button></td>
                      </tr>`
         );
@@ -166,18 +172,15 @@
                 .children("strong[name='subTotal']"));
 
         $(ProductPrice).each(function (i, priceItem) {
-            price += Math.round(parseFloat($(priceItem).html()));
+            price += parseFloat($(priceItem).html());
         });
-
-
-        total.html(price);
-
+        total.html(price.toFixed(2));
     }
 
 
 
     //asignar eventos al input cantidades y descuentos
-    function EventAsingToQuantityAndDiscount(data) {
+    function AsingEventsToQuantityAndDiscount(data) {
 
         var Productquantity = $("#tableProduct").children("tr").children("td").children("input[name='quantity']");
         var Discountquantity = $("#tableProduct").children("tr").children("td").children("input[name='discount']");
@@ -217,13 +220,12 @@
             alert("El campo de cantidad no puede estar vacio");
         } else {
             percent = parseFloat(parseInt(discountInput) / 100);
-            discount = parseFloat(data.price * percent);
+            discount = parseFloat(data.SellingPrice * percent);
 
-            var totalProductPriceWithDiscount = (data.price * quantityInput) - (discount * quantityInput);
-            totalProductPriceWithDiscount = Math.round(totalProductPriceWithDiscount);
+            var totalProductPriceWithDiscount = (data.SellingPrice * quantityInput) - (discount * quantityInput);
+            totalProductPriceWithDiscount = totalProductPriceWithDiscount.toFixed(2);
             $(subTotal).html(totalProductPriceWithDiscount);
         }
-
     }
 
 
@@ -247,41 +249,31 @@
         });
     }
 
-
+    function CreateSaleData() {
+        
+        var sales = {
+            Products: CreateProductArray(),
+            PaymentMethod: (parseInt($("#paymentMethod").val()) > 0) ? parseInt($("#paymentMethod").val()) : 0,
+            DiscountType: (parseInt($("#discountSelect").val()) > 0) ? parseInt($("#discountSelect").val()) : 0,
+            Commentary: $("#commentary").val(),
+            Total: parseFloat($("#total").html()),
+            ClientId: (parseInt($("#clientSelect").val()) > 0) ? parseInt($("#clientSelect").val()) : 0
+        }
+        return sales;
+    }
 
     //finalizar venta
     $("#salesButton").click(function () {
 
-        var paymentMethod = parseInt($("#paymentMethod").val());
-        var client = $("#clientSelect").val();
-        var commentary = $("#commentary").val();
-        var total = $("#total").html();
-        var products = CreateProductArray(); 
-        var notClient = 0;
-        var sales;
+        var sales = CreateSaleData();
 
-        if (typeof (products) != "undefined") {
-
-            if (products.length === 0) {
-                bootbox.alert("Debe agregar algun producto para realizar una venta");
-            } else {
-                if (paymentMethod === 0) {
-                    bootbox.alert("Debe seleccionar un metodo de pago");
-                } else {
-
-                    if (client.length == 0) {
-                        sales = CreateSalesObject(notClient, products, paymentMethod, commentary, total);
-                        if (sales.length != 0) {
-                            SendSalesObject(sales);
-                        }
-                    } else {
-                        sales = CreateSalesObject(client, products, paymentMethod, commentary, total);
-                        if (sales.length != 0) {
-                            SendSalesObject(sales);
-                        }
-                    }
-                }
-            }
+        if (sales.Products.length === 0) {
+            bootbox.alert("Debe agregar algun producto para realizar una venta");
+        }
+        else if (sales.PaymentMethod === 0) {
+            bootbox.alert("Debe seleccionar un metodo de pago");
+        } else {
+            SendSalesObject(sales);
         }
     });
 
@@ -291,47 +283,35 @@
         var products = $("#tableProduct").children("tr");
         var quantityError = 0;
         var discountError = 0;
-        var listOfProducts = [];
+        var productArray = [];
 
         $(products).each(function (i, item) {
-            var product = Array.from($(item).children());
-            var model = {
-                id: parseInt($(product).children("input[type='hidden']").val()),
-                quantity: parseInt($(product).children("input[name='quantity']").val()),
-                discount: parseInt($(product).children("input[name='discount']").val()),
+            var tableTds = Array.from($(item).children());
+            var productModel = {
+                ProductId: parseInt($(tableTds).children("input[type='hidden']").val()),
+                Name:      $(tableTds).children("strong[name='product']").html(),
+                Quantity:  parseInt($(tableTds).children("input[name='quantity']").val()),
+                Discount:  parseInt($(tableTds).children("input[name='discount']").val()),
+                SubTotal:  $(tableTds).children("strong[name='subTotal']").html(),
             }
-
-            if (isNaN(model.quantity)){
+            if (isNaN(productModel.Quantity)){
                 quantityError += 1;
             }
-            if (isNaN(model.discount)){
+            if (isNaN(productModel.Discount)){
                 discountError += 1;
             }
-             listOfProducts.push(model);
+             productArray.push(productModel);
         });
         if (quantityError > 0) {
             bootbox.alert("El campo cantidad de algun producto esta vacio, por favor llene el campo");
         } else if (discountError > 0) {
             bootbox.alert("El campo descuento de algun producto esta vacio, por favor llene el campo");
         } else {
-            return listOfProducts;
+            return productArray;
         }
         
     }
 
-
-
-    //crear objeto venta
-    function CreateSalesObject(clientId, products, paymentMethod, commentary,total) {
-        var Sales = {
-            ClientId: clientId,
-            Products: products,
-            paymentMethod: paymentMethod,
-            commentary: commentary,
-            Total: total
-        }
-        return Sales;
-    }
 
     //enviar objeto via ajax
     function SendSalesObject(sales) {
@@ -342,19 +322,17 @@
                     type: "POST",
                     url: "Sales/Save",
                     dataType: "json",
-                    data: { model: JSON.stringify(sales) },
+                    data: { data: JSON.stringify(sales) },
                     success: function (data) {
 
-                        if (String(data) === "true") {
+                        if (data === "1") {
                             bootbox.alert("La venta se ha realizado correctamente", function ()
                             {
                                 window.location.reload();
                             });
-                            
                         } else {
                             bootbox.alert("Error: " + data);
                         }
-
                     },
                     error: function (response) {
                         bootbox.alert("Error: " + response.responseText);
@@ -364,9 +342,5 @@
                 bootbox.alert("La venta no se ha realizado");
             }
         });
-        
     }
-
-
-
 });

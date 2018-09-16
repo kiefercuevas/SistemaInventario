@@ -30,6 +30,14 @@ namespace DgrosStore.Models.EntitiesConfiguration
             HasRequired(p => p.Store)
                 .WithMany(s => s.Products)
                 .HasForeignKey(p => p.StoreId);
+
+            HasRequired(p => p.Store)
+                .WithMany(s => s.Products)
+                .HasForeignKey(p => p.StoreId);
+
+            HasRequired(p => p.Provider)
+                .WithMany(s => s.Products)
+                .HasForeignKey(p => p.ProviderId);
         }
     }
 }

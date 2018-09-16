@@ -7,10 +7,11 @@ namespace DgrosStore.Models.viewModels
 {
     public class SaveSalesViewModel
     {
-        public int ClientId;
-        public IEnumerable<ProductJsonModel> Products;
-        public PaymentMethod paymentMethod;
-        public string commentary;
+        public IEnumerable<ProductModelForSalesViewDTO> Products;
+        public PaymentMethod PaymentMethod;
+        public int DiscountType;
+        public string Commentary;
         public float Total;
+        public int ClientId;
     }
 }
