@@ -320,9 +320,10 @@
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\viewModels\CategoryDTO\CategoryModel.cs" />
     <Compile Include="Models\viewModels\ClientDTO\ClientViewModel.cs" />
-    <Compile Include="Models\viewModels\DataTable.cs" />
+    <Compile Include="Models\viewModels\DatatableDTO\DataTable.cs" />
     <Compile Include="Models\viewModels\ClientDTO\GetClientModel.cs" />
     <Compile Include="Models\viewModels\ClientDTO\ClientModelForSalesViewDTO.cs" />
+    <Compile Include="Models\viewModels\DatatableDTO\DatatableDTO.cs" />
     <Compile Include="Models\viewModels\DiscountDTO\DiscountModelDTO.cs" />
     <Compile Include="Models\viewModels\ProductDTO\ProductDTO.cs" />
     <Compile Include="Models\viewModels\ProductDTO\ProductModelForSalesViewDTO.cs" />

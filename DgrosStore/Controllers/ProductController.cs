@@ -8,6 +8,7 @@ using System.Data.Entity;
 using DgrosStore.Models.viewModels;
 using System.IO;
 using System.Data.Entity.Validation;
+using DgrosStore.Models.viewModels.DatatableDTO;
 
 namespace DgrosStore.Controllers
 {
@@ -29,38 +30,20 @@ namespace DgrosStore.Controllers
             bool state = true;
             List<Product> Products = dgrosStore.Products
                 .Where(p => p.State == state).OrderBy(p => p.ProductId).ToList();
-            DataTable Datatable = CreateDatatable(Request);
 
+            DataTable Datatable = CreateDatatable(Request);
             Datatable.RecordsTotal = Products.Count();
 
             if (!String.IsNullOrEmpty(Datatable.Search))
-            {
-                Products = dgrosStore.Products
-                .Where(p => p.State == state)
-                .Where(p => p.Name.ToLower().IndexOf(Datatable.Search) > -1 ||
-                            p.ShoppingPrice.ToString().IndexOf(Datatable.Search) > -1 ||
-                            p.SellingPrice.ToString().IndexOf(Datatable.Search) > -1 ||
-                            p.Stock.ToString().IndexOf(Datatable.Search) > -1)
-                .OrderBy(p => p.CategoryId)
-                .ToList();
-            }
+                Products = GetProductByParam(Datatable.Search);
 
             Datatable.RecordFiltered = Products.Count();
 
             //order,paging
-            List<Product>productOrdered = OrderProductsByParam(Products, Datatable.Order,Datatable.OrderDir);
-            List<Product> pagingProducts = productOrdered.Skip(Datatable.Start).Take(Datatable.Length).ToList();
-            List<ProductDTO> productDTOlist = CreateProductModelList(pagingProducts);
+            List<ProductDTO> productDTOlist = GetProductDTOList(Products, Datatable);
 
-            return Json(
-               new
-               {
-                   draw = Datatable.Draw,
-                   recordsTotal = Datatable.RecordsTotal,
-                   recordsFiltered = Datatable.RecordFiltered,
-                   data = productDTOlist
-               }
-               , JsonRequestBehavior.AllowGet);
+            DatatableDTO<ProductDTO> datatableDTO = GetDatatableDTO(productDTOlist, Datatable);
+            return Json(datatableDTO, JsonRequestBehavior.AllowGet);
         }
    
         [Route("Product/details/{id}")]
@@ -98,33 +81,14 @@ namespace DgrosStore.Controllers
             Datatable.RecordsTotal = categoryProducts.Count();
 
             if (!String.IsNullOrEmpty(Datatable.Search))
-            {
-                categoryProducts = dgrosStore.Products
-                    .Include(p => p.Category)
-                .Where(p => p.Category.Name == category)
-                .Where(p => p.State == state)
-                .Where(p => p.Name.ToLower().IndexOf(Datatable.Search) > -1 ||
-                            p.ShoppingPrice.ToString().IndexOf(Datatable.Search) > -1 ||
-                            p.SellingPrice.ToString().IndexOf(Datatable.Search) > -1 ||
-                            p.Stock.ToString().IndexOf(Datatable.Search) > -1)
-                .OrderBy(p => p.CategoryId)
-                .ToList();
-            }
+                categoryProducts = GetProductAndCategoryByParam(category, Datatable.Search);
 
             Datatable.RecordFiltered = categoryProducts.Count();
-
             //order,paging
-            List<Product> productOrdered = OrderProductsByParam(categoryProducts, Datatable.Order, Datatable.OrderDir);
-            List<Product> pagingProducts = productOrdered.Skip(Datatable.Start).Take(Datatable.Length).ToList();
-            List<ProductDTO> productDTOlist = CreateProductModelList(pagingProducts);
+            List<ProductDTO> productDTOlist = GetProductDTOList(categoryProducts, Datatable);
+            DatatableDTO<ProductDTO> datatableDTO = GetDatatableDTO(productDTOlist,Datatable);
 
-            return Json(
-                new {
-                    draw = Datatable.Draw,
-                    recordsTotal = Datatable.RecordsTotal,
-                    recordsFiltered = Datatable.RecordFiltered,
-                    data = productDTOlist}
-                ,JsonRequestBehavior.AllowGet);
+            return Json(datatableDTO, JsonRequestBehavior.AllowGet);
         } 
 
         //create
@@ -154,7 +118,7 @@ namespace DgrosStore.Controllers
                 {
                     if (productView.UploadedFile != null)
                     {
-                        image = UploadMethod(productView, url);
+                        image = GetImageObject(productView, url);
                         productView.Product.Image = image.RelativePath;
                         productView.UploadedFile.SaveAs(image.AbsolutePath);
                     }
@@ -179,12 +143,15 @@ namespace DgrosStore.Controllers
                     return View("SaveProduct", editproduct);
                 }
                 //edited product
+                if (productInDb == null)
+                    return View("SaveProduct");
+
                 productInDb = GetEditedProduct(productInDb,productView);
                 if(productView.UploadedFile != null)
                 {
                     try
                     {
-                        image = UploadMethod(productView, url);
+                        image = GetImageObject(productView, url);
                         if (image.RelativePath != productInDb.Image)
                         {
                             productInDb.Image = image.RelativePath;
@@ -256,7 +223,7 @@ namespace DgrosStore.Controllers
             dgrosStore.Dispose();
         }
 
-        private Image UploadMethod(ProductViewModel productView,string url)
+        private Image GetImageObject(ProductViewModel productView,string url)
         {
             //para obtener el nombre y la extension del archivo
             string filename = Path.GetFileName(productView.UploadedFile.FileName);
@@ -372,6 +339,55 @@ namespace DgrosStore.Controllers
             return dataTable;
         }
 
+        private List<Product> GetProductByParam(string param,bool state = true)
+        {
+            List<Product> Products = dgrosStore.Products
+                .Where(p => p.State == state)
+                .Where(p => p.Name.ToLower().IndexOf(param) > -1 ||
+                            p.ShoppingPrice.ToString().IndexOf(param) > -1 ||
+                            p.SellingPrice.ToString().IndexOf(param) > -1 ||
+                            p.Stock.ToString().IndexOf(param) > -1)
+                .OrderBy(p => p.CategoryId)
+                .ToList();
 
+            return Products;
+        }
+        private List<Product> GetProductAndCategoryByParam(string category,string param, bool state = true)
+        {
+            List<Product> categoryProducts = dgrosStore.Products
+                    .Include(p => p.Category)
+                .Where(p => p.Category.Name == category)
+                .Where(p => p.State == state)
+                .Where(p => p.Name.ToLower().IndexOf(param) > -1 ||
+                            p.ShoppingPrice.ToString().IndexOf(param) > -1 ||
+                            p.SellingPrice.ToString().IndexOf(param) > -1 ||
+                            p.Stock.ToString().IndexOf(param) > -1)
+                .OrderBy(p => p.CategoryId)
+                .ToList();
+            return categoryProducts;
+        }
+        private DatatableDTO<ProductDTO> GetDatatableDTO(List<ProductDTO> products,DataTable datatable)
+        {
+            DatatableDTO<ProductDTO> datatableDTO = new DatatableDTO<ProductDTO>()
+            {
+                draw = datatable.Draw,
+                recordsTotal = datatable.RecordsTotal,
+                recordsFiltered = datatable.RecordFiltered,
+                data = products
+            };
+            return datatableDTO;
+        }
+
+        private List<Product> GetPagingProduct(List<Product> products,DataTable dataTable)
+        {
+            return products.Skip(dataTable.Start).Take(dataTable.Length).ToList();
+        }
+        private List<ProductDTO> GetProductDTOList(List<Product> products,DataTable dataTable)
+        {
+            products = OrderProductsByParam(products, dataTable.Order, dataTable.OrderDir);
+            products = GetPagingProduct(products, dataTable);
+
+            return CreateProductModelList(products);
+        }
     }
 }
