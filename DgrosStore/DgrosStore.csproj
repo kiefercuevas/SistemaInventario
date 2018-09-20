@@ -159,6 +159,7 @@
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\ClientController.cs" />
     <Compile Include="Controllers\DiscountController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
@@ -283,6 +284,14 @@
     <Compile Include="Migrations\201809162137529_addValidationToDiscountTable.Designer.cs">
       <DependentUpon>201809162137529_addValidationToDiscountTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809200302437_changeImageColumnToImageRouteInProductsTable.cs" />
+    <Compile Include="Migrations\201809200302437_changeImageColumnToImageRouteInProductsTable.Designer.cs">
+      <DependentUpon>201809200302437_changeImageColumnToImageRouteInProductsTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809200320138_restoreImageColumn.cs" />
+    <Compile Include="Migrations\201809200320138_restoreImageColumn.Designer.cs">
+      <DependentUpon>201809200320138_restoreImageColumn.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Client.cs" />
@@ -294,6 +303,7 @@
     <Compile Include="Models\customValidation\ProviderEmailValidation.cs" />
     <Compile Include="Models\customValidation\SellingPriceValidation.cs" />
     <Compile Include="Models\customValidation\ShoppingPriceValidation.cs" />
+    <Compile Include="Models\customValidation\UploadedProductImageValidation.cs" />
     <Compile Include="Models\DgrosStoreContext.cs" />
     <Compile Include="Models\Discount.cs" />
     <Compile Include="Models\EntitiesConfiguration\CategoryConfiguration.cs" />
@@ -329,7 +339,7 @@
     <Compile Include="Models\viewModels\ProductDTO\ProductModelForSalesViewDTO.cs" />
     <Compile Include="Models\viewModels\ProviderDTO\GetProvidersModel.cs" />
     <Compile Include="Models\viewModels\Image.cs" />
-    <Compile Include="Models\viewModels\ProductDTO\ProductViewModel.cs" />
+    <Compile Include="Models\viewModels\ProductDTO\ProductViewModelDTO.cs" />
     <Compile Include="Models\viewModels\ProviderDTO\ProviderViewModel.cs" />
     <Compile Include="Models\viewModels\SalesDTO\SalesViewModel.cs" />
     <Compile Include="Models\viewModels\SalesDTO\SaveSalesViewModel.cs" />
@@ -647,7 +657,9 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -680,6 +692,7 @@
     <Content Include="Views\Sales\SalesIndex.cshtml" />
     <Content Include="Views\Discount\DiscountIndex.cshtml" />
     <Content Include="Views\Discount\SaveDiscount.cshtml" />
+    <Content Include="Views\Error\Error40413.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -775,6 +788,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809162137529_addValidationToDiscountTable.resx">
       <DependentUpon>201809162137529_addValidationToDiscountTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809200302437_changeImageColumnToImageRouteInProductsTable.resx">
+      <DependentUpon>201809200302437_changeImageColumnToImageRouteInProductsTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809200320138_restoreImageColumn.resx">
+      <DependentUpon>201809200320138_restoreImageColumn.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

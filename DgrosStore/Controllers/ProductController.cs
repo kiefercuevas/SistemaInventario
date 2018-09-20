@@ -15,10 +15,11 @@ namespace DgrosStore.Controllers
     public class ProductController : Controller
     {
         private readonly DgrosStoreContext dgrosStore;
-
+        private readonly bool STATE;
         public ProductController()
         {
             dgrosStore = new DgrosStoreContext();
+            STATE = true;
         }
 
         public ActionResult Index()
@@ -27,11 +28,10 @@ namespace DgrosStore.Controllers
         }
         public ActionResult GetProducts()
         {
-            bool state = true;
             List<Product> Products = dgrosStore.Products
-                .Where(p => p.State == state).OrderBy(p => p.ProductId).ToList();
+                .Where(p => p.State == STATE).OrderBy(p => p.ProductId).ToList();
 
-            DataTable Datatable = CreateDatatable(Request);
+            DataTable Datatable = CreateDatatableObjectWithRequestValues(Request);
             Datatable.RecordsTotal = Products.Count();
 
             if (!String.IsNullOrEmpty(Datatable.Search))
@@ -39,20 +39,18 @@ namespace DgrosStore.Controllers
 
             Datatable.RecordFiltered = Products.Count();
 
-            //order,paging
-            List<ProductDTO> productDTOlist = GetProductDTOList(Products, Datatable);
+            List<ProductDTO> productDTOlist = GetOrderedAndPagedProductDTOList(Products, Datatable);
+            DatatableDTO<ProductDTO> datatableDTO = CreateDatatableDTO(productDTOlist, Datatable);
 
-            DatatableDTO<ProductDTO> datatableDTO = GetDatatableDTO(productDTOlist, Datatable);
             return Json(datatableDTO, JsonRequestBehavior.AllowGet);
         }
    
         [Route("Product/details/{id}")]
         public ActionResult ProductDetails(int id)
         {
-            bool state = true;
             Product product = dgrosStore.Products
                 .Include(p => p.Category)
-                .Where(p => p.State == state)
+                .Where(p => p.State == STATE)
                 .SingleOrDefault(p => p.ProductId == id);
 
             if (product == null)
@@ -70,14 +68,13 @@ namespace DgrosStore.Controllers
 
         public ActionResult GetProductByCategory(string category)
         {
-            bool state = true;
             List<Product> categoryProducts = dgrosStore.Products
                 .Include(p => p.Category)
                 .Where(p => p.Category.Name == category)
-                .Where(p => p.State == state)
+                .Where(p => p.State == STATE)
                 .ToList();
 
-            DataTable Datatable = CreateDatatable(Request);
+            DataTable Datatable = CreateDatatableObjectWithRequestValues(Request);
             Datatable.RecordsTotal = categoryProducts.Count();
 
             if (!String.IsNullOrEmpty(Datatable.Search))
@@ -85,17 +82,17 @@ namespace DgrosStore.Controllers
 
             Datatable.RecordFiltered = categoryProducts.Count();
             //order,paging
-            List<ProductDTO> productDTOlist = GetProductDTOList(categoryProducts, Datatable);
-            DatatableDTO<ProductDTO> datatableDTO = GetDatatableDTO(productDTOlist,Datatable);
+            List<ProductDTO> productDTOlist = GetOrderedAndPagedProductDTOList(categoryProducts, Datatable);
+            DatatableDTO<ProductDTO> datatableDTO = CreateDatatableDTO(productDTOlist,Datatable);
 
             return Json(datatableDTO, JsonRequestBehavior.AllowGet);
         } 
 
-        //create
+        
         [Route("Create/Product")]
         public ActionResult Create()
         {
-            ProductViewModel productViewModel = CreateProductViewModel();
+            ProductViewModelDTO productViewModel = CreateProductViewModel();
             return View("SaveProduct", productViewModel);
         }
 
@@ -103,61 +100,60 @@ namespace DgrosStore.Controllers
         [HttpPost]
         [Route("Save/Product")]
         [ValidateAntiForgeryToken]
-        public ActionResult Save(ProductViewModel productView)
+        public ActionResult Save(ProductViewModelDTO productView)
         {
             string url = "/Content/Images/Products/";
-            productView.Product.State = true;
+            string defaultImageName = "prueba.jpg";
             Image image;
+
+            productView.Product.State = STATE;
 
             if (productView.Product.ProductId == 0)
             {
-                //validaciones
                 if (!ModelState.IsValid)
                     return View("SaveProduct", CreateProductViewModel());
+
                 try
                 {
                     if (productView.UploadedFile != null)
                     {
-                        image = GetImageObject(productView, url);
-                        productView.Product.Image = image.RelativePath;
+                        image = CreateImageObject(productView.UploadedFile.FileName, url);
+                        productView.Product = SetImageToProduct(productView.Product, image);
                         productView.UploadedFile.SaveAs(image.AbsolutePath);
                     }
                     else
-                        productView.Product.Image = url + "prueba.jpg";
+                        productView.Product.Image = url + defaultImageName;
 
                     dgrosStore.Products.Add(productView.Product);
                 }
-                catch(Exception ex)
-                {
-                    return Content(ex.Message);
-                }
+                catch(Exception ex){return Content(ex.Message);}
             }
             else
             {
                 Product productInDb = GetProduct(productView.Product.ProductId);
-                //validacion
+
+                if (productInDb == null)
+                    return View("SaveProduct",CreateProductViewModel());
+
                 if (!ModelState.IsValid)
                 {
-                    ProductViewModel editproduct = CreateProductViewModel();
+                    ProductViewModelDTO editproduct = CreateProductViewModel();
                     editproduct.Product = productInDb;
                     return View("SaveProduct", editproduct);
                 }
-                //edited product
-                if (productInDb == null)
-                    return View("SaveProduct");
-
+                
                 productInDb = GetEditedProduct(productInDb,productView);
+
                 if(productView.UploadedFile != null)
                 {
+                    image = CreateImageObject(productView.UploadedFile.FileName, url);
                     try
                     {
-                        image = GetImageObject(productView, url);
-                        if (image.RelativePath != productInDb.Image)
-                        {
-                            productInDb.Image = image.RelativePath;
-                            productView.UploadedFile.SaveAs(image.AbsolutePath);
-                        }
-                    }catch(Exception ex)
+                        productInDb = SetImageToProduct(productInDb, image);
+                        productView.UploadedFile.SaveAs(image.AbsolutePath);
+
+                    }
+                    catch(Exception ex)
                     {
                         return Content(ex.Message);
                     }         
@@ -167,16 +163,13 @@ namespace DgrosStore.Controllers
             {
                 dgrosStore.SaveChanges();
                 return RedirectToAction("Index", "Product");
-            }catch(Exception ex)
-            {
-                return Content(ex.Message);
-            } 
+            }catch(Exception ex){return Content(ex.Message);} 
         }
 
         [Route("Edit/Product/{id}")]
         public ActionResult Edit(int id)
         {
-            ProductViewModel productViewModel = CreateProductViewModel();
+            ProductViewModelDTO productViewModel = CreateProductViewModel();
             Product productInDB = GetProduct(id);
 
             if (productInDB == null)
@@ -192,7 +185,6 @@ namespace DgrosStore.Controllers
         [HttpPost]
         public ActionResult Delete(int id)
         {
-            bool state = false;
             Product product = GetProduct(id);
             string error = "";
 
@@ -202,7 +194,7 @@ namespace DgrosStore.Controllers
             {
                 try
                 {
-                    product.State = state;
+                    product.State = !STATE;
                     dgrosStore.SaveChanges();
                     return Json("1");
                 }
@@ -223,51 +215,60 @@ namespace DgrosStore.Controllers
             dgrosStore.Dispose();
         }
 
-        private Image GetImageObject(ProductViewModel productView,string url)
+        private Image CreateImageObject(string fileName,string url)
         {
-            //para obtener el nombre y la extension del archivo
-            string filename = Path.GetFileName(productView.UploadedFile.FileName);
+            string filename = Path.GetFileName(fileName);
             string RelativePath = url + filename;
             string Absolutepath = Path.Combine(Server.MapPath(url) + filename);
 
             return new Image() {RelativePath = RelativePath,AbsolutePath = Absolutepath};
         }
 
-        private List<ProductDTO> CreateProductModelList(List<Product> products)
+        private Product SetImageToProduct(Product product,Image image)
+        {
+          if (product.ProductId != 0 && product.Image  != image.RelativePath)
+              product.Image = image.RelativePath;
+          else if(product.ProductId == 0)
+              product.Image = image.RelativePath;
+
+            return product;
+        }
+
+        private List<ProductDTO> CreateProductDTOList(List<Product> products)
         {
             List<ProductDTO> productDTOList = new List<ProductDTO>();
-            foreach(var product in products)
-                productDTOList.Add(FillProductDTO(product));
+            foreach(Product product in products)
+                productDTOList.Add(CreateProductDTOFromProduct(product));
 
             return productDTOList;
         }
 
-        private List<Product> OrderProductsByParam(List<Product>products,string order,string direction)
+        private List<Product> OrderProductByDirection(List<Product>products,DataTable dataTable)
         {
-            if (!String.IsNullOrWhiteSpace(order) && !String.IsNullOrWhiteSpace(direction))
+            if (!String.IsNullOrWhiteSpace(dataTable.Order) && !String.IsNullOrWhiteSpace(dataTable.OrderDir))
             {
-                if(direction == "asc")
-                    products = SwitchStructureAsc(products, order);
-                else if(direction == "desc")
-                    products = SwitchStructureDesc(products, order);
+                if(dataTable.OrderDir == "asc")
+                    products = OrderProductAscendantByParam(products, dataTable.Order);
+                else if(dataTable.OrderDir == "desc")
+                    products = OrderProductDescendentByParam(products, dataTable.Order);
             }
             return products;
         }
 
-        private ProductViewModel CreateProductViewModel(bool state = true)
+        private ProductViewModelDTO CreateProductViewModel()
         {
-            ProductViewModel productViewModel = new ProductViewModel()
+            ProductViewModelDTO productViewModel = new ProductViewModelDTO()
             {
-                Categories = dgrosStore.Categories.Where(p => p.State == state).ToList(),
+                Categories = dgrosStore.Categories.Where(p => p.State == STATE).ToList(),
                 Stores = dgrosStore.Stores.ToList(),
                 Product = new Product(),
-                Providers = dgrosStore.Providers.Where(p => p.State == state).ToList(),
+                Providers = dgrosStore.Providers.Where(p => p.State == STATE).ToList(),
                 Discounts = dgrosStore.Discounts.ToList()
             };
             return productViewModel;
         }
 
-        private Product GetEditedProduct(Product product,ProductViewModel productViewModel)
+        private Product GetEditedProduct(Product product,ProductViewModelDTO productViewModel)
         {
             product.Name = productViewModel.Product.Name;
             product.ShoppingPrice = productViewModel.Product.ShoppingPrice;
@@ -283,11 +284,10 @@ namespace DgrosStore.Controllers
 
         private Product GetProduct(int id)
         {
-            Product product = dgrosStore.Products.SingleOrDefault(p => p.ProductId == id);
-            return product;
+            return dgrosStore.Products.SingleOrDefault(p => p.ProductId == id);
         }
 
-        private ProductDTO FillProductDTO(Product product)
+        private ProductDTO CreateProductDTOFromProduct(Product product)
         {
             ProductDTO productDTO = new ProductDTO()
             {
@@ -300,7 +300,7 @@ namespace DgrosStore.Controllers
             return productDTO;
         }
 
-        private List<Product> SwitchStructureAsc(List<Product> products,string order)
+        private List<Product> OrderProductAscendantByParam(List<Product> products,string order)
         {
             switch (order)
             {
@@ -311,7 +311,7 @@ namespace DgrosStore.Controllers
                 default:              products = products.ToList(); return products;
             }
         }
-        private List<Product> SwitchStructureDesc(List<Product> products, string order)
+        private List<Product> OrderProductDescendentByParam(List<Product> products, string order)
         {
             switch (order)
             {
@@ -323,7 +323,7 @@ namespace DgrosStore.Controllers
             }
         }
 
-        private DataTable CreateDatatable(HttpRequestBase Request)
+        private DataTable CreateDatatableObjectWithRequestValues(HttpRequestBase Request)
         {
             DataTable dataTable = new DataTable()
             {
@@ -339,10 +339,10 @@ namespace DgrosStore.Controllers
             return dataTable;
         }
 
-        private List<Product> GetProductByParam(string param,bool state = true)
+        private List<Product> GetProductByParam(string param)
         {
             List<Product> Products = dgrosStore.Products
-                .Where(p => p.State == state)
+                .Where(p => p.State == STATE)
                 .Where(p => p.Name.ToLower().IndexOf(param) > -1 ||
                             p.ShoppingPrice.ToString().IndexOf(param) > -1 ||
                             p.SellingPrice.ToString().IndexOf(param) > -1 ||
@@ -352,12 +352,12 @@ namespace DgrosStore.Controllers
 
             return Products;
         }
-        private List<Product> GetProductAndCategoryByParam(string category,string param, bool state = true)
+        private List<Product> GetProductAndCategoryByParam(string category,string param)
         {
             List<Product> categoryProducts = dgrosStore.Products
                     .Include(p => p.Category)
                 .Where(p => p.Category.Name == category)
-                .Where(p => p.State == state)
+                .Where(p => p.State == STATE)
                 .Where(p => p.Name.ToLower().IndexOf(param) > -1 ||
                             p.ShoppingPrice.ToString().IndexOf(param) > -1 ||
                             p.SellingPrice.ToString().IndexOf(param) > -1 ||
@@ -366,7 +366,7 @@ namespace DgrosStore.Controllers
                 .ToList();
             return categoryProducts;
         }
-        private DatatableDTO<ProductDTO> GetDatatableDTO(List<ProductDTO> products,DataTable datatable)
+        private DatatableDTO<ProductDTO> CreateDatatableDTO(List<ProductDTO> products,DataTable datatable)
         {
             DatatableDTO<ProductDTO> datatableDTO = new DatatableDTO<ProductDTO>()
             {
@@ -382,12 +382,12 @@ namespace DgrosStore.Controllers
         {
             return products.Skip(dataTable.Start).Take(dataTable.Length).ToList();
         }
-        private List<ProductDTO> GetProductDTOList(List<Product> products,DataTable dataTable)
+        private List<ProductDTO> GetOrderedAndPagedProductDTOList(List<Product> products,DataTable dataTable)
         {
-            products = OrderProductsByParam(products, dataTable.Order, dataTable.OrderDir);
+            products = OrderProductByDirection(products, dataTable);
             products = GetPagingProduct(products, dataTable);
 
-            return CreateProductModelList(products);
+            return CreateProductDTOList(products);
         }
     }
 }

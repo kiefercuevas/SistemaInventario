@@ -1,4 +1,4 @@
-﻿@model DgrosStore.Models.viewModels.ProductViewModel
+﻿@model DgrosStore.Models.viewModels.ProductViewModelDTO
 @{
     ViewBag.Title = "";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -71,6 +71,7 @@
                     </div>
                 </div>
             </div>
+            @Html.ValidationMessageFor(m => m.UploadedFile)
             <div class="col-sm-12 col-lg-4 my-4">
                 <img height="250" width="250" src="@(Model.Product.Image == null ? @"\Content\Images\prueba.png" : Model.Product.Image)" class="rounded float-left" alt="...">
             </div>
